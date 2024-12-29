@@ -1,5 +1,7 @@
 package run.scatter.botjde;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import run.scatter.botjde.events.EventListener;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -14,7 +16,6 @@ import java.util.List;
 
 @Configuration
 public class BotConfiguration {
-
     private static final Logger log = LoggerFactory.getLogger( BotConfiguration.class );
 
     @Value("${token}")
