@@ -1,6 +1,8 @@
+package run.scatter.botjde.scheduled;
+
 import org.springframework.stereotype.Component;
 
 @Component
-interface Schedule {
-  Void message();
+public interface Schedule {
+  void message();
 }
