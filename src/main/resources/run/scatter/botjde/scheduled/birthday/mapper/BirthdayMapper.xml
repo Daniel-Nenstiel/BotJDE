@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<mapper namespace="run.scatter.botjde.scheduled.birthday.mapper.BirthdayMapper" >
+  <select id="getBirthdays" type="" resultMap="">
+
+  </select>
+  <resultMap id="" type="run.scatter.botjde.scheduled.entity.Birthday">
+
+  </resultMap>
+</mapper>
