@@ -37,13 +37,6 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.36")
 }
 
-flyway {
-    url = System.getProperty("spring.datasource.url", "")
-    user = System.getProperty("spring.datasource.username", "")
-    password = System.getProperty("spring.datasource.password", "")
-    locations = arrayOf("classpath:db/migration")
-}
-
 tasks.test {
     useJUnitPlatform()
 }

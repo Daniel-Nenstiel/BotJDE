@@ -29,8 +29,8 @@ public class PuzzleMessage implements ScheduledMessage {
   @Value("${puzzleChannelId:}")
   private String puzzleChannelId;
 
-  @Scheduled(cron = "*/10 * * * * ?")
-//  @Scheduled(cron = "0 0 6 * * ?") // 6:00 AM daily
+//  @Scheduled(cron = "*/10 * * * * ?")
+  @Scheduled(cron = "0 0 6 * * ?") // 6:00 AM daily
   public void sendDailyPuzzles() {
     if (puzzleChannelId == null || puzzleChannelId.isEmpty()) {
       log.error("Channel ID is not configured. Cannot send messages.");
@@ -93,13 +93,11 @@ public class PuzzleMessage implements ScheduledMessage {
     return """
         Good morning! Here are today’s NYTimes puzzles:
         
-        - [Mini Crossword](https://www.nytimes.com/crosswords/game/mini)
-        - [Wordle](https://www.nytimes.com/games/wordle/index.html)
-        - [Spelling Bee](https://www.nytimes.com/puzzles/spelling-bee)
-        - [Sudoku](https://www.nytimes.com/puzzles/sudoku)
-        - [Crossword](https://www.nytimes.com/crosswords/game/daily)
+        - [Mini Crossword](<https://www.nytimes.com/crosswords/game/mini>)
+        - [Wordle](<https://www.nytimes.com/games/wordle/index.html>)
+        - [Spelling Bee](<https://www.nytimes.com/puzzles/spelling-bee>)
+        - [Crossword](<https://www.nytimes.com/crosswords/game/daily>)
         
-        Have fun solving!
         """;
   }
 }

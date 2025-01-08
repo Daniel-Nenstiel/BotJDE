@@ -1,1 +1,16 @@
-token: "MY_TOKEN_HERE"
+token: "MyTokenHere"
+defaultChannelId: "1234567890987654321"
+puzzleChannelId:  "1234567890987654321"
+
+logging:
+  level:
+    ROOT: WARN
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/botjde
+    username: postgres
+    password: postgres
+  flyway:
+    enabled: true
+    locations: classpath:db/migration

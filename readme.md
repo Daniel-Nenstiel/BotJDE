@@ -1,9 +1,9 @@
 # BotJDE - A bot for your friends
 
 ## Features
-***(Coming Soon)*** - Notifications on important dates like Holidays, birthdays and anniversaries \
+NYTimes Puzzle link consolidation \
+Notifications on important dates like Holidays, birthdays and anniversaries \
 ***(Coming Soon)*** - Username color changing commands \
-***(Coming Soon)*** - Puzzle link consolidation
 
 ## How to run
 Generate a .env file in /docker (there is an example) \
@@ -24,9 +24,6 @@ Populate it with
 
 When both of these files are generated, navigate to /docker and run `docker compose up`
 
-## Flyway
-Running flyway: \
-gradle flywayMigrate \
--Dspring.datasource.url=jdbc:postgresql://localhost:5432/botjde \
--Dspring.datasource.username=your_username \
--Dspring.datasource.password=your_password
+## Database
+### Flyway
+Flyway runs automatically on application start up and applies all relevant Migrations scripts in src/main/resources/db/migrations 

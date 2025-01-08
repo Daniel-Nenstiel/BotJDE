@@ -1,6 +1,7 @@
 package run.scatter.botjde.events.director;
 
-import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -9,6 +10,7 @@ import reactor.core.publisher.Mono;
 import run.scatter.botjde.events.director.processors.CommandProcessor;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
@@ -22,7 +24,10 @@ class DirectorTest {
   private CommandProcessor processor2;
 
   @Mock
-  private MessageChannel messageChannel;
+  private Message message;
+
+  @Mock
+  private User mockUser;
 
   private Director director;
 
@@ -40,18 +45,22 @@ class DirectorTest {
     // Arrange
     String content = "!testCommand arg1";
     String author = "user";
-    Mono<MessageChannel> channelMono = Mono.just(messageChannel);
+
+    // Mock message behavior
+    when(message.getContent()).thenReturn(content);
+    when(message.getAuthor()).thenReturn(Optional.of(mockUser));
+    when(mockUser.getUsername()).thenReturn(author);
 
     // Mock the behavior of the processors
     when(processor1.supports("!testCommand")).thenReturn(true);
-    when(processor1.process(content, author, channelMono)).thenReturn(Mono.empty());
+    when(processor1.process(content, author, message)).thenReturn(Mono.empty());
 
     // Act
-    Mono<Void> result = director.directCall(content, author, channelMono);
+    Mono<Void> result = director.directCall(content, author, message);
 
     // Assert
     result.block(); // Blocking to wait for the result
-    verify(processor1, times(1)).process(content, author, channelMono); // Ensure process is called on processor1
+    verify(processor1, times(1)).process(content, author, message); // Ensure process is called on processor1
     verify(processor2, never()).process(any(), any(), any()); // Ensure processor2 is not called
   }
 
@@ -60,10 +69,14 @@ class DirectorTest {
     // Arrange
     String content = "!unknownCommand";
     String author = "user";
-    Mono<MessageChannel> channelMono = Mono.just(messageChannel);
+
+    // Mock message behavior
+    when(message.getContent()).thenReturn(content);
+    when(message.getAuthor()).thenReturn(Optional.of(mockUser));
+    when(mockUser.getUsername()).thenReturn(author);
 
     // Act
-    Mono<Void> result = director.directCall(content, author, channelMono);
+    Mono<Void> result = director.directCall(content, author, message);
 
     // Assert
     assertNull(result.block()); // Ensure it returns Mono.empty()
@@ -76,10 +89,14 @@ class DirectorTest {
     // Arrange
     String content = "testCommand arg1";
     String author = "user";
-    Mono<MessageChannel> channelMono = Mono.just(messageChannel);
+
+    // Mock message behavior
+    when(message.getContent()).thenReturn(content);
+    when(message.getAuthor()).thenReturn(Optional.of(mockUser));
+    when(mockUser.getUsername()).thenReturn(author);
 
     // Act
-    Mono<Void> result = director.directCall(content, author, channelMono);
+    Mono<Void> result = director.directCall(content, author, message);
 
     // Assert
     assertNull(result.block()); // Ensure it returns Mono.empty()
@@ -92,14 +109,18 @@ class DirectorTest {
     // Arrange
     String content = "!testCommand arg1";
     String author = "user";
-    Mono<MessageChannel> channelMono = Mono.just(messageChannel);
+
+    // Mock message behavior
+    when(message.getContent()).thenReturn(content);
+    when(message.getAuthor()).thenReturn(Optional.of(mockUser));
+    when(mockUser.getUsername()).thenReturn(author);
 
     // Mock the behavior of the processors (none support the command)
     when(processor1.supports("!testCommand")).thenReturn(false);
     when(processor2.supports("!testCommand")).thenReturn(false);
 
     // Act
-    Mono<Void> result = director.directCall(content, author, channelMono);
+    Mono<Void> result = director.directCall(content, author, message);
 
     // Assert
     assertNull(result.block()); // Ensure it returns Mono.empty()
