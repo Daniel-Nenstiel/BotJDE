@@ -1,12 +1,14 @@
 package run.scatter.botjde.scheduled.birthday.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import run.scatter.botjde.scheduled.entity.Birthday;
+import run.scatter.botjde.entity.Birthday;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.List;
 
 @Mapper
 public interface BirthdayMapper {
-  ArrayList<Birthday> getBirthdays(LocalDate date);
+  List<Birthday> getBirthdaysByDate(LocalDate date);
+
+  List<Birthday> getTodaysBirthdays();
 }

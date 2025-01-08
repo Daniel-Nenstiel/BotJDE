@@ -12,25 +12,36 @@ repositories {
 }
 
 dependencies {
+    implementation("org.springframework.boot:spring-boot-starter")
     implementation(platform("org.springframework.boot:spring-boot-dependencies:3.4.1"))
 
-    implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
 
     implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4")
 
-    implementation("com.discord4j:discord4j-core:3.2.0")
+    implementation("com.discord4j:discord4j-core:3.3.0-RC1")
 
-    implementation("org.flywaydb:flyway-core")
-    
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("org.postgresql:postgresql")
+
+    implementation("org.projectlombok:lombok:1.18.28")
+
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mockito:mockito-core:5.15.2")
 
+    annotationProcessor("org.projectlombok:lombok:1.18.28")
     compileOnly("org.projectlombok:lombok:1.18.36")
-    runtimeOnly("org.postgresql:postgresql")
+}
+
+flyway {
+    url = System.getProperty("spring.datasource.url", "")
+    user = System.getProperty("spring.datasource.username", "")
+    password = System.getProperty("spring.datasource.password", "")
+    locations = arrayOf("classpath:db/migration")
 }
 
 tasks.test {

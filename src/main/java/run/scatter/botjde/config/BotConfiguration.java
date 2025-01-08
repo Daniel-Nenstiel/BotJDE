@@ -1,7 +1,5 @@
-package run.scatter.botjde;
+package run.scatter.botjde.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import run.scatter.botjde.events.EventListener;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -32,7 +30,8 @@ public class BotConfiguration {
               .block();
 
             for(EventListener<T> listener : eventListeners) {
-                client.on(listener.getEventType())
+              assert client != null;
+              client.on(listener.getEventType())
                   .flatMap(listener::execute)
                   .onErrorResume(listener::handleError)
                   .subscribe();

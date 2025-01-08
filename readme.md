@@ -23,3 +23,10 @@ Populate it with
   * Must match what is in your docker.env
 
 When both of these files are generated, navigate to /docker and run `docker compose up`
+
+## Flyway
+Running flyway: \
+gradle flywayMigrate \
+-Dspring.datasource.url=jdbc:postgresql://localhost:5432/botjde \
+-Dspring.datasource.username=your_username \
+-Dspring.datasource.password=your_password

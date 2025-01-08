@@ -6,25 +6,31 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.MessageCreateMono;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
-import reactor.core.CoreSubscriber;
+import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
+import run.scatter.botjde.entity.Birthday;
+import run.scatter.botjde.entity.User;
+import run.scatter.botjde.scheduled.birthday.dao.BirthdayDao;
 import run.scatter.botjde.utils.Discord;
 import run.scatter.botjde.utils.Time;
-import run.scatter.botjde.utils.TimeUnit;
 
-import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class BirthdayMessageTest {
+
+  @Mock
+  private BirthdayDao birthdayDao;
 
   @Mock
   private Discord discordUtils;
@@ -35,82 +41,107 @@ class BirthdayMessageTest {
   @Mock
   private MessageChannel messageChannel;
 
-  @Mock
-  private MessageCreateMono messageCreateMono;
-
   @InjectMocks
   private BirthdayMessage birthdayMessage;
 
   @BeforeEach
-  void setUp() throws Exception {
-    MockitoAnnotations.openMocks(this);
-
-    // Use reflection to set the private channelId field
-    Field channelIdField = BirthdayMessage.class.getDeclaredField("channelId");
-    channelIdField.setAccessible(true);
-    channelIdField.set(birthdayMessage, "123456789012345678");
-  }
-
-  @Test
-  void message_whenTimeIsNotNearNineAM_doesNotSendMessage() {
-    // Arrange
-    LocalDateTime nineAM = LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.of(9, 0));
-
-    try (MockedStatic<Time> mockedTime = mockStatic(Time.class)) {
-      mockedTime.when(() -> Time.isNowNearTime(nineAM, 30, TimeUnit.SECONDS)).thenReturn(true);
-
-      // Act
-      birthdayMessage.message();
-
-      // Assert
-      verifyNoInteractions(discordUtils); // No client interaction
+  void setUp() {
+    try (AutoCloseable mocks = MockitoAnnotations.openMocks(this)) {
+      ReflectionTestUtils.setField(birthdayMessage, "channelId", "123456789012345678"); // Set a valid test value
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to initialize mocks", e);
     }
   }
 
   @Test
-  void message_whenTimeIsNearNineAM_sendsMessage() {
+  void checkEvent_whenNoBirthdays_doesNotSendMessages() {
     // Arrange
-    LocalDateTime nineAM = LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.of(9, 0));
+    LocalDateTime nineAM = LocalDateTime.of(LocalDate.now(), LocalTime.of(9, 0));
 
     try (MockedStatic<Time> mockedTime = mockStatic(Time.class)) {
-      mockedTime.when(() -> Time.isNowNearTime(nineAM, 30, TimeUnit.SECONDS)).thenReturn(false);
+      // Ensure the method proceeds by returning false
+      mockedTime.when(() -> Time.isNowNearTime(nineAM, 30, ChronoUnit.SECONDS)).thenReturn(false);
+
+      // Mock no birthdays
+      when(birthdayDao.getTodaysBirthdays()).thenReturn(Collections.emptyList());
+
+      // Act
+      birthdayMessage.checkEvent();
+
+      // Assert
+      verify(birthdayDao).getTodaysBirthdays();
+      verifyNoInteractions(discordUtils);
+    }
+  }
+
+  @Test
+  void checkEvent_whenBirthdaysExist_sendsMessages() {
+    // Arrange
+    LocalDateTime nineAM = LocalDateTime.of(LocalDate.now(), LocalTime.of(9, 0));
+
+    try (MockedStatic<Time> mockedTime = mockStatic(Time.class)) {
+      mockedTime.when(() -> Time.isNowNearTime(nineAM, 30, ChronoUnit.SECONDS)).thenReturn(false);
+
+      // Create a real User instance using the constructor
+      User user = new User("Test User", "testuser", 123456789012345678L);
+
+      // Create a Birthday instance and set the user
+      Birthday birthday = new Birthday();
+      birthday.setUser(user);
+
+      when(birthdayDao.getTodaysBirthdays()).thenReturn(Collections.singletonList(birthday));
 
       when(discordUtils.getClient()).thenReturn(gatewayDiscordClient);
-      when(gatewayDiscordClient.getChannelById(Snowflake.of("123456789012345678"))).thenReturn(Mono.just(messageChannel));
-      when(messageChannel.createMessage("happy birthday")).thenReturn(messageCreateMono);
+      when(gatewayDiscordClient.getChannelById(Snowflake.of("123456789012345678")))
+          .thenReturn(Mono.just(messageChannel));
+
+      // Mock the behavior of createMessage to return a MessageCreateMono
+      MessageCreateMono messageCreateMono = mock(MessageCreateMono.class);
+      when(messageChannel.createMessage("Happy Birthday Test User")).thenReturn(messageCreateMono);
+      when(messageCreateMono.subscribe()).thenAnswer(invocation -> null);
 
       // Act
-      birthdayMessage.message();
-
-      // Capture the argument passed to `subscribe()`
-      ArgumentCaptor<CoreSubscriber> captor = ArgumentCaptor.forClass(CoreSubscriber.class);
-      verify(messageCreateMono).subscribe(captor.capture());
+      birthdayMessage.checkEvent();
 
       // Assert
-      assertNotNull(captor.getValue(), "The subscriber should not be null");
+      verify(birthdayDao).getTodaysBirthdays();
       verify(discordUtils).getClient();
-      verify(gatewayDiscordClient).getChannelById(Snowflake.of("123456789012345678"));
-      verify(messageChannel).createMessage("happy birthday");
+      verify(messageChannel).createMessage("Happy Birthday Test User");
     }
   }
 
   @Test
-  void message_logsErrorWhenExceptionOccurs() {
+  void sendMessage_logsErrorWhenExceptionOccurs() {
     // Arrange
-    LocalDateTime nineAM = LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.of(9, 0));
+    when(discordUtils.getClient()).thenThrow(new RuntimeException("Test exception"));
 
-    try (MockedStatic<Time> mockedTime = mockStatic(Time.class)) {
-      mockedTime.when(() -> Time.isNowNearTime(nineAM, 30, TimeUnit.SECONDS)).thenReturn(false);
+    // Act
+    birthdayMessage.sendMessage("Test Message");
 
-      // Mock exception for `discordUtils.getClient()`
-      when(discordUtils.getClient()).thenThrow(new RuntimeException("Test exception"));
+    // Assert
+    verify(discordUtils).getClient();
+  }
 
-      // Act
-      birthdayMessage.message();
+  @Test
+  void formatMessage_returnsDefaultMessage() {
+    // Act
+    String message = birthdayMessage.formatMessage();
 
-      // Assert
-      verify(discordUtils).getClient(); // Ensure it was invoked
-      verifyNoInteractions(gatewayDiscordClient); // Ensure no further interactions
-    }
+    // Assert
+    assertEquals("Happy Birthday", message);
+  }
+
+  @Test
+  void formatMessage_withBirthday_returnsPersonalizedMessage() {
+    // Arrange
+    User user = new User("Test User", "testuser", 123456789012345678L); // Real User instance
+    Birthday birthday = new Birthday(); // Real Birthday instance
+    birthday.setUser(user); // Set the user on the birthday
+
+    // Act
+    String message = birthdayMessage.formatMessage(birthday);
+
+    // Assert
+    assertEquals("Happy Birthday Test User", message);
   }
 }

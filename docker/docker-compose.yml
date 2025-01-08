@@ -28,9 +28,9 @@ services:
     container_name: postgres
     image: postgres
     environment:
+      POSTGRES_DB: botjde
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: botjde
       PGDATA: /data/postgres
     volumes:
       - db:/home/snip3sh0t/Dev/dbs/botjde

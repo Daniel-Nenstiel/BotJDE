@@ -1,10 +1,11 @@
 package run.scatter.botjde.scheduled.birthday.dao;
 
-import run.scatter.botjde.scheduled.entity.Birthday;
+import run.scatter.botjde.entity.Birthday;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.List;
 
 public interface BirthdayDao {
-  ArrayList<Birthday> getBirthdays(LocalDate date);
+  List<Birthday> getBirthdays(LocalDate date);
+  List<Birthday> getTodaysBirthdays();
 }
