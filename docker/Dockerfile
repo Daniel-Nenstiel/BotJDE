@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 RUN apt-get update && apt-get install -y wget unzip
 
 # Download and install Gradle
-ENV GRADLE_VERSION=7.5
+ENV GRADLE_VERSION=8.12
 RUN wget -q "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" && \
     unzip -q "gradle-${GRADLE_VERSION}-bin.zip" -d /opt && \
     ln -s "/opt/gradle-${GRADLE_VERSION}/bin/gradle" /usr/bin/gradle && \
