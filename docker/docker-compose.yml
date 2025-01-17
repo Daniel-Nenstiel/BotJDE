@@ -5,12 +5,15 @@ networks:
   db:
     driver: bridge
 volumes:
+  logs:
   db:
 
 services:
   botjde:
     build:
-      context: .
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: botjde:latest
     container_name: botjde
     restart: unless-stopped
     networks:
@@ -18,11 +21,10 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - A=B
+      - JAVA_OPTS=-Duser.timezone=America/New_York
+      - TZ=America/New_York
     volumes:
-      - ./../:/app
-    working_dir: /app
-    command: gradle bootrun
+      - ../logs:/app/logs 
     depends_on:
       database:
         condition: service_healthy
