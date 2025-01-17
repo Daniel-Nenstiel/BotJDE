@@ -89,7 +89,7 @@ public class PuzzleMessage implements ScheduledMessage {
     }
   }
 
-  public String formatMessage() {
+  public static String formatMessage() {
     return """
         Good morning! Here are today’s NYTimes puzzles:
         

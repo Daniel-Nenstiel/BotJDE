@@ -1,7 +1,7 @@
 -- Needed for UUID
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Create Enum type
+-- Create Enum type for valid events
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'valid_event') THEN
@@ -10,63 +10,32 @@ BEGIN
 END
 $$;
 
--- Create a People table
+-- Create Servers table
+CREATE TABLE IF NOT EXISTS servers (
+  id SERIAL PRIMARY KEY,          -- Auto-incrementing primary key
+  serverId BIGINT UNIQUE NOT NULL, -- Unique server ID (e.g., Discord server ID)
+  name TEXT NOT NULL              -- Server name
+);
+
+-- Create People table
 CREATE TABLE IF NOT EXISTS people (
-  id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL,          -- Changed from VARCHAR(32) to TEXT
-  username TEXT UNIQUE NOT NULL, -- Changed from VARCHAR(32) to TEXT
-  userId BIGINT NOT NULL
+  id SERIAL PRIMARY KEY,          -- Auto-incrementing primary key
+  name TEXT NOT NULL,             -- Person's name
+  username TEXT UNIQUE NOT NULL,  -- Unique username
+  userId BIGINT NOT NULL,         -- Unique user ID (e.g., Discord user ID)
+  server_id INT NOT NULL REFERENCES servers(id) ON DELETE CASCADE -- Link to servers table
 );
 
--- Create an Events table
+-- Create Events table
 CREATE TABLE IF NOT EXISTS events (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  type valid_event NOT NULL,
-  event_date DATE NOT NULL
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- Unique event ID
+  type valid_event NOT NULL,                     -- Event type (ENUM)
+  event_date DATE NOT NULL                       -- Event date
 );
 
--- Create a table for joining People and Events
+-- Create People-Events linking table
 CREATE TABLE IF NOT EXISTS people_events (
-  person_id INT NOT NULL REFERENCES people(id) ON DELETE CASCADE,
-  event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-  PRIMARY KEY (person_id, event_id)
+  person_id INT NOT NULL REFERENCES people(id) ON DELETE CASCADE, -- Link to people table
+  event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE, -- Link to events table
+  PRIMARY KEY (person_id, event_id)                               -- Composite primary key
 );
-
--- FUNCTIONS
-
--- =======================================================
--- Person Scripts
--- =======================================================
-
--- Function to Insert or Update a Person
-CREATE OR REPLACE FUNCTION insert_or_update_person(
-    name_param TEXT,
-    username_param TEXT,
-    userId_param BIGINT
-) RETURNS VOID AS $$
-BEGIN
-    -- Insert the person if they don't exist, or update their name/userId
-    IF NOT EXISTS (
-        SELECT 1 FROM people WHERE username = username_param
-    ) THEN
-        INSERT INTO people (name, username, userId)
-        VALUES (name_param, username_param, userId_param);
-    ELSE
-        UPDATE people
-        SET name = name_param, userId = userId_param
-        WHERE username = username_param;
-    END IF;
-END;
-$$ LANGUAGE plpgsql;
-
--- Function to Get Person ID by Username
-CREATE OR REPLACE FUNCTION get_person_id_by_username(
-    username TEXT
-) RETURNS INT AS $$
-DECLARE
-    person_id INT;
-BEGIN
-    SELECT id INTO person_id FROM people WHERE username = username;
-    RETURN person_id;
-END;
-$$ LANGUAGE plpgsql;
