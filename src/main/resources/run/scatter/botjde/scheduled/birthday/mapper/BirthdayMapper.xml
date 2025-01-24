@@ -13,13 +13,8 @@
         <arg column="name" javaType="java.lang.String" />
         <arg column="username" javaType="java.lang.String" />
         <arg column="userId" javaType="java.lang.Long" />
+        <arg column="serverId" javaType="java.lang.Long" />
       </constructor>
-      <association property="server" javaType="run.scatter.botjde.entity.Server.Server">
-        <constructor>
-          <arg column="serverName" javaType="java.lang.String" />
-          <arg column="serverId" javaType="java.lang.Long" />
-        </constructor>
-      </association>
     </association>
   </resultMap>
 
@@ -29,17 +24,14 @@
       p.name AS name,
       p.username AS username,
       p.userId AS userId,
-      s.serverId AS serverId,
-      s.name AS serverName,
+      p.serverId AS serverId,
       e.event_date AS birthdayDate
     FROM
       events e
     JOIN
       people_events pe ON e.id = pe.event_id
     JOIN
-      people p ON pe.person_id = p.id
-    JOIN
-      servers s ON p.server_id = s.id
+      people p ON pe.person_userId = p.userId AND pe.person_serverId = p.serverId
     WHERE
       e.type = 'birthday'
       AND EXTRACT(MONTH FROM e.event_date) = EXTRACT(MONTH FROM CURRENT_DATE)
@@ -52,17 +44,14 @@
       p.name AS name,
       p.username AS username,
       p.userId AS userId,
-      s.serverId AS serverId,
-      s.name AS serverName,
+      p.serverId AS serverId,
       e.event_date AS birthdayDate
     FROM
       events e
     JOIN
       people_events pe ON e.id = pe.event_id
     JOIN
-      people p ON pe.person_id = p.id
-    JOIN
-      servers s ON p.server_id = s.id
+      people p ON pe.person_userId = p.userId AND pe.person_serverId = p.serverId
     WHERE
       e.type = 'birthday'
       AND EXTRACT(MONTH FROM e.event_date) = EXTRACT(MONTH FROM #{date})

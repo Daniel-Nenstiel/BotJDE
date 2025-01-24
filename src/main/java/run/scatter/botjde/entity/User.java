@@ -10,10 +10,13 @@ import run.scatter.botjde.entity.Server.Server;
 public class User {
   private String name;
   private String username;
-  private Snowflake discordId;
-  private Server server;
+  private Snowflake userId;
+  private Snowflake serverId;
 
   public void setDiscordId(Long discordId) {
-    this.discordId = Snowflake.of(discordId);
+    this.userId = Snowflake.of(discordId);
+  }
+  public void setServerId(Long serverId) {
+    this.userId = Snowflake.of(serverId);
   }
 }

@@ -10,20 +10,15 @@ BEGIN
 END
 $$;
 
--- Create Servers table
-CREATE TABLE IF NOT EXISTS servers (
-  id SERIAL PRIMARY KEY,          -- Auto-incrementing primary key
-  serverId BIGINT UNIQUE NOT NULL, -- Unique server ID (e.g., Discord server ID)
-  name TEXT NOT NULL              -- Server name
-);
 
 -- Create People table
 CREATE TABLE IF NOT EXISTS people (
-  id SERIAL PRIMARY KEY,          -- Auto-incrementing primary key
-  name TEXT NOT NULL,             -- Person's name
-  username TEXT UNIQUE NOT NULL,  -- Unique username
-  userId BIGINT NOT NULL,         -- Unique user ID (e.g., Discord user ID)
-  server_id INT NOT NULL REFERENCES servers(id) ON DELETE CASCADE -- Link to servers table
+  serverId BIGINT NOT NULL,        -- Discord server ID
+  userId BIGINT NOT NULL,          -- Discord user ID
+  username TEXT NOT NULL,          -- Username (unique within a server)
+  name TEXT NOT NULL,              -- User's name
+  PRIMARY KEY (serverId, userId),  -- Composite primary key
+  UNIQUE (serverId, username)      -- Ensure username is unique within a server
 );
 
 -- Create Events table
@@ -35,7 +30,11 @@ CREATE TABLE IF NOT EXISTS events (
 
 -- Create People-Events linking table
 CREATE TABLE IF NOT EXISTS people_events (
-  person_id INT NOT NULL REFERENCES people(id) ON DELETE CASCADE, -- Link to people table
-  event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE, -- Link to events table
-  PRIMARY KEY (person_id, event_id)                               -- Composite primary key
+  person_userId BIGINT NOT NULL,        -- References people(userId)
+  person_serverId BIGINT NOT NULL,     -- References people(serverId)
+  event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+  PRIMARY KEY (person_userId, person_serverId, event_id),
+  FOREIGN KEY (person_userId, person_serverId)
+    REFERENCES people(userId, serverId) ON DELETE CASCADE
 );
+

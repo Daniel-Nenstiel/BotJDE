@@ -1,46 +1,49 @@
 -- Function to Add a Birthday for a Person
 CREATE OR REPLACE FUNCTION add_birthday(
-    username_param TEXT,
-    eventDate DATE
+    serverId_param BIGINT,
+    userId_param BIGINT,
+    event_date_param DATE
 ) RETURNS VOID AS $$
 DECLARE
-    person_id INT;
     event_id UUID;
 BEGIN
-    -- Get the person's ID by username
-    SELECT id INTO person_id FROM people WHERE username = username_param;
-
-    -- Ensure the person exists
-    IF person_id IS NULL THEN
-        RAISE EXCEPTION 'Person with username % does not exist.', username_param;
-    END IF;
-
-    -- Insert a birthday event
+    -- Insert a new event for the birthday
     INSERT INTO events (type, event_date)
-    VALUES ('birthday'::valid_event, eventDate)
+    VALUES ('birthday', event_date_param)
     RETURNING id INTO event_id;
 
-    -- Link the person and the birthday event
-    INSERT INTO people_events (person_id, event_id)
-    VALUES (person_id, event_id);
+    -- Link the user to the event
+    INSERT INTO people_events (person_userId, person_serverId, event_id)
+    VALUES (userId_param, serverId_param, event_id);
 END;
 $$ LANGUAGE plpgsql;
 
-
 -- Function to Get All Birthdays
 CREATE OR REPLACE FUNCTION get_all_birthdays()
-RETURNS TABLE(name TEXT, username TEXT, event_date DATE) AS $$
+RETURNS TABLE (
+    serverId BIGINT,
+    userId BIGINT,
+    username TEXT,
+    name TEXT,
+    birthday_date DATE
+) AS $$
 BEGIN
     RETURN QUERY
     SELECT
-        p.name, p.username, e.event_date
+        p.serverId,
+        p.userId,
+        p.username,
+        p.name,
+        e.event_date AS birthday_date
     FROM
-        people p
+        events e
     JOIN
-        people_events pe ON p.id = pe.person_id
+        people_events pe ON e.id = pe.event_id
     JOIN
-        events e ON pe.event_id = e.id
+        people p ON pe.person_userId = p.userId AND pe.person_serverId = p.serverId
     WHERE
-        e.type = 'birthday'::valid_event;
+        e.type = 'birthday'
+    ORDER BY
+        e.event_date;
 END;
 $$ LANGUAGE plpgsql;
