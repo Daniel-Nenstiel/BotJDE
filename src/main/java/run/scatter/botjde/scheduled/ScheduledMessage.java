@@ -1,8 +1,10 @@
 package run.scatter.botjde.scheduled;
 
-import org.springframework.stereotype.Component;
+import run.scatter.botjde.config.AppConfig;
 
-@Component
+import java.util.List;
+
 public interface ScheduledMessage {
-  void sendMessage(String msg);
+  String getType(); // Returns the message type (e.g., "birthdays", "puzzles")
+  List<String> checkEvent(AppConfig.Server server);
 }

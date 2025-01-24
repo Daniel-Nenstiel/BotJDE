@@ -1,82 +1,50 @@
 package run.scatter.botjde.scheduled.birthday;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.object.entity.channel.MessageChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-
 import org.springframework.stereotype.Service;
-import run.scatter.botjde.scheduled.ScheduledMessage;
-import run.scatter.botjde.scheduled.birthday.dao.BirthdayDao;
+import run.scatter.botjde.config.AppConfig;
 import run.scatter.botjde.entity.Birthday;
-import run.scatter.botjde.utils.Discord;
-import run.scatter.botjde.utils.Time;
+import run.scatter.botjde.scheduled.BaseScheduledMessage;
+import run.scatter.botjde.scheduled.birthday.dao.BirthdayDao;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-
-import static java.util.Objects.isNull;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class BirthdayMessage implements ScheduledMessage {
+public class BirthdayMessage extends BaseScheduledMessage {
+
   private static final Logger log = LoggerFactory.getLogger(BirthdayMessage.class);
 
-  @Autowired
-  private BirthdayDao birthdayDao;
+  private final BirthdayDao birthdayDao;
 
-  @Autowired
-  Discord discordUtils;
-
-  @Value("${defaultChannelId}")
-  private String channelId;
-
-  //  @Scheduled(cron = "*/10 * * * * ?")
-  @Scheduled(cron = "0 0 9 * * ?")
-  public void checkEvent() {
-    LocalDate today = LocalDateTime.now().toLocalDate();
-    //Check to make sure the scheduler didn't misfire. (It does this on application startup)
-    LocalDateTime nineAM = LocalDateTime.of(today, LocalTime.of(9, 0));
-    if (Time.isNowNearTime(nineAM, 30, ChronoUnit.SECONDS)) {
-      return;
-    }
-
-    birthdayDao.getTodaysBirthdays().forEach(birthday -> sendMessage(formatMessage(birthday)));
+  public BirthdayMessage(BirthdayDao birthdayDao) {
+    this.birthdayDao = birthdayDao;
   }
 
   @Override
-  public void sendMessage(String msg) {
-    boolean loggedIn = false;
-    GatewayDiscordClient client = null;
-
-    try {
-      client = discordUtils.getClient();
-      loggedIn = true;
-
-      client.getChannelById(Snowflake.of(channelId))
-          .ofType(MessageChannel.class)
-          .flatMap(channel -> channel.createMessage(msg))
-          .subscribe();
-
-    } catch (Exception err) {
-      log.error("Error during scheduled message: ", err);
-    }
-
-    if (loggedIn && !isNull(client)) {
-      client.logout();
-    }
+  public String getType() {
+    return "birthdays";
   }
 
-  public String formatMessage() {
-    return "Happy Birthday";
+  @Override
+  protected boolean isEnabled(AppConfig.Server server) {
+    return server.isBirthdaysEnabled();
   }
 
-  public String formatMessage(Birthday birthday) {
-    return "Happy Birthday " + birthday.getUser().getName();
+  @Override
+  protected List<String> generateMessages(AppConfig.Server server) {
+    List<Birthday> birthdaysToday = birthdayDao.getTodaysBirthdays();
+    if (birthdaysToday.isEmpty()) {
+      log.info("No birthdays today for server: {}", server != null ? server.getName() : "N/A");
+      return List.of();
+    }
+    return birthdaysToday.stream()
+        .map(this::formatMessage)
+        .collect(Collectors.toList());
+  }
+
+  private String formatMessage(Birthday birthday) {
+    return String.format("Happy Birthday %s!", birthday.getUser().getName());
   }
 }

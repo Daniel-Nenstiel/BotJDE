@@ -15,9 +15,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation(platform("org.springframework.boot:spring-boot-dependencies:3.4.1"))
 
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-
     implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4")
 
     implementation("com.discord4j:discord4j-core:3.3.0-RC1")

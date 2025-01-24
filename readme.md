@@ -3,7 +3,7 @@
 ## Features
 NYTimes Puzzle link consolidation \
 Notifications on important dates like Holidays, birthdays and anniversaries \
-***(Coming Soon)*** - Username color changing commands \
+***(Coming Soon)*** - Username color changing commands
 
 ## How to run
 Generate a .env file in /docker (there is an example) \
