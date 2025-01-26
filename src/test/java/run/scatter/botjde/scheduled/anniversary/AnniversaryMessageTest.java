@@ -1,8 +1,8 @@
 package run.scatter.botjde.scheduled.anniversary;
 
 import org.junit.jupiter.api.Test;
-import run.scatter.botjde.config.AppConfig;
 import run.scatter.botjde.entity.Anniversary;
+import run.scatter.botjde.entity.server.Server;
 import run.scatter.botjde.scheduled.anniversary.dao.AnniversaryDao;
 
 import java.util.List;
@@ -15,28 +15,52 @@ class AnniversaryMessageTest {
 
   @Test
   void generateMessages_returnsFormattedMessages() {
+    // Mock dependencies
     AnniversaryDao anniversaryDao = mock(AnniversaryDao.class);
     AnniversaryMessage anniversaryMessage = new AnniversaryMessage(anniversaryDao);
-    AppConfig.Server server = mock(AppConfig.Server.class);
+    Server mockServer = mock(Server.class);
 
+    // Mock anniversary data
     Anniversary anniversary = mock(Anniversary.class);
     when(anniversary.getFormattedNames()).thenReturn("Alice and Bob");
     when(anniversaryDao.getTodaysAnniversaries()).thenReturn(List.of(anniversary));
 
-    List<String> messages = anniversaryMessage.generateMessages(server);
+    // Generate messages
+    List<String> messages = anniversaryMessage.generateMessages(mockServer);
 
+    // Assert that the message is correctly formatted
     assertThat(messages).containsExactly("Happy Anniversary to Alice and Bob!");
   }
 
   @Test
+  void generateMessages_returnsEmptyListWhenNoAnniversaries() {
+    // Mock dependencies
+    AnniversaryDao anniversaryDao = mock(AnniversaryDao.class);
+    AnniversaryMessage anniversaryMessage = new AnniversaryMessage(anniversaryDao);
+    Server mockServer = mock(Server.class);
+
+    // No anniversaries for today
+    when(anniversaryDao.getTodaysAnniversaries()).thenReturn(List.of());
+
+    // Generate messages
+    List<String> messages = anniversaryMessage.generateMessages(mockServer);
+
+    // Assert that no messages are generated
+    assertThat(messages).isEmpty();
+  }
+
+  @Test
   void isEnabled_checksServerConfig() {
-    AppConfig.Server server = mock(AppConfig.Server.class);
+    // Mock server
+    Server mockServer = mock(Server.class);
     AnniversaryMessage anniversaryMessage = new AnniversaryMessage(mock(AnniversaryDao.class));
 
-    when(server.isAnniversariesEnabled()).thenReturn(true);
-    assertThat(anniversaryMessage.isEnabled(server)).isTrue();
+    // Check when anniversaries are enabled
+    when(mockServer.isAnniversariesEnabled()).thenReturn(true);
+    assertThat(anniversaryMessage.isEnabled(mockServer)).isTrue();
 
-    when(server.isAnniversariesEnabled()).thenReturn(false);
-    assertThat(anniversaryMessage.isEnabled(server)).isFalse();
+    // Check when anniversaries are disabled
+    when(mockServer.isAnniversariesEnabled()).thenReturn(false);
+    assertThat(anniversaryMessage.isEnabled(mockServer)).isFalse();
   }
 }

@@ -3,7 +3,6 @@ package run.scatter.botjde.entity;
 import discord4j.common.util.Snowflake;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import run.scatter.botjde.entity.Server.Server;
 
 @Data
 @RequiredArgsConstructor

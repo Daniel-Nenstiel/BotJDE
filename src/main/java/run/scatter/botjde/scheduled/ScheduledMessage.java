@@ -1,10 +1,12 @@
 package run.scatter.botjde.scheduled;
 
-import run.scatter.botjde.config.AppConfig;
+import discord4j.common.util.Snowflake;
+import run.scatter.botjde.entity.server.Server;
 
 import java.util.List;
 
 public interface ScheduledMessage {
-  String getType(); // Returns the message type (e.g., "birthdays", "puzzles")
-  List<String> checkEvent(AppConfig.Server server);
+  String getType();
+  List<String> checkEvent(Server server);
+  Snowflake getChannelId(Server server);
 }

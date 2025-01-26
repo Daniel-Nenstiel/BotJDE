@@ -1,21 +1,20 @@
 package run.scatter.botjde.scheduled.birthday;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import run.scatter.botjde.config.AppConfig;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import run.scatter.botjde.entity.Birthday;
+import run.scatter.botjde.entity.server.Server;
 import run.scatter.botjde.scheduled.BaseScheduledMessage;
 import run.scatter.botjde.scheduled.birthday.dao.BirthdayDao;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Slf4j
+@Component
+@Qualifier("birthdays")
 public class BirthdayMessage extends BaseScheduledMessage {
-
-  private static final Logger log = LoggerFactory.getLogger(BirthdayMessage.class);
-
   private final BirthdayDao birthdayDao;
 
   public BirthdayMessage(BirthdayDao birthdayDao) {
@@ -28,12 +27,12 @@ public class BirthdayMessage extends BaseScheduledMessage {
   }
 
   @Override
-  protected boolean isEnabled(AppConfig.Server server) {
+  protected boolean isEnabled(Server server) {
     return server.isBirthdaysEnabled();
   }
 
   @Override
-  protected List<String> generateMessages(AppConfig.Server server) {
+  protected List<String> generateMessages(Server server) {
     List<Birthday> birthdaysToday = birthdayDao.getTodaysBirthdays();
     if (birthdaysToday.isEmpty()) {
       log.info("No birthdays today for server: {}", server != null ? server.getName() : "N/A");

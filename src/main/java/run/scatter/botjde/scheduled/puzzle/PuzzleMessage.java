@@ -1,17 +1,26 @@
 package run.scatter.botjde.scheduled.puzzle;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import run.scatter.botjde.config.AppConfig;
+import discord4j.common.util.Snowflake;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import run.scatter.botjde.entity.server.Server;
 import run.scatter.botjde.scheduled.BaseScheduledMessage;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-@Service
+@Slf4j
+@Component
+@Qualifier("puzzles")
 public class PuzzleMessage extends BaseScheduledMessage {
-
-  private static final Logger log = LoggerFactory.getLogger(PuzzleMessage.class);
+  private static final Map<String, String> PUZZLES = Map.of(
+      "Mini Crossword", "https://www.nytimes.com/crosswords/game/mini",
+      "Wordle", "https://www.nytimes.com/games/wordle/index.html",
+      "Spelling Bee", "https://www.nytimes.com/puzzles/spelling-bee",
+      "Crossword", "https://www.nytimes.com/crosswords/game/daily"
+  );
 
   @Override
   public String getType() {
@@ -19,27 +28,29 @@ public class PuzzleMessage extends BaseScheduledMessage {
   }
 
   @Override
-  protected boolean isEnabled(AppConfig.Server server) {
+  protected boolean isEnabled(Server server) {
     return server.isPuzzlesEnabled();
   }
 
   @Override
-  protected List<String> generateMessages(AppConfig.Server server) {
+  protected List<String> generateMessages(Server server) {
     return List.of(formatMessage());
   }
 
   private String formatMessage() {
-    return """
-            Good morning! Here are today’s NYTimes puzzles:
+    String puzzleLinks = PUZZLES.entrySet().stream()
+        .map(entry -> String.format("- [%s](<%s>)", entry.getKey(), entry.getValue()))
+        .collect(Collectors.joining("\n"));
 
-            - [Mini Crossword](<https://www.nytimes.com/crosswords/game/mini>)
-            - [Wordle](<https://www.nytimes.com/games/wordle/index.html>)
-            - [Spelling Bee](<https://www.nytimes.com/puzzles/spelling-bee>)
-            - [Crossword](<https://www.nytimes.com/crosswords/game/daily>)
-            """;
+    return String.format("Good morning! Here are today’s NYTimes puzzles:\n\n%s", puzzleLinks);
   }
 
   public String getDefaultPuzzleMessage() {
-    return generateMessages(null).get(0); // Always returns the first (and only) default message
+    return formatMessage(); // Directly call the formatting method
+  }
+
+  @Override
+  public Snowflake getChannelId(Server server) {
+    return server.getPuzzleChannelId();
   }
 }

@@ -2,12 +2,11 @@ package run.scatter.botjde.scheduled;
 
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.MessageChannel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import run.scatter.botjde.config.AppConfig;
+import run.scatter.botjde.entity.server.Server;
 import run.scatter.botjde.utils.Discord;
 
 import java.time.LocalDateTime;
@@ -15,20 +14,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class MessageOrchestrator {
-  private static final Logger log = LoggerFactory.getLogger(MessageOrchestrator.class);
 
   private final Map<String, ScheduledMessage> messageHandlers;
   private final AppConfig appConfig;
   private final Discord discordUtils;
 
-  @Autowired
-  public MessageOrchestrator(List<ScheduledMessage> scheduledMessages, AppConfig appConfig, Discord discordUtils) {
-    this.messageHandlers = scheduledMessages.stream()
+  public MessageOrchestrator(List<ScheduledMessage> handlers, AppConfig appConfig, Discord discordUtils) {
+    this.messageHandlers = handlers.stream()
         .collect(Collectors.toMap(ScheduledMessage::getType, handler -> handler));
     this.appConfig = appConfig;
     this.discordUtils = discordUtils;
+
+    log.info("Registered message handlers: {}", messageHandlers.keySet());
   }
 
   @Scheduled(cron = "0 0 * * * ?")
@@ -41,10 +41,7 @@ public class MessageOrchestrator {
         handleMessages("birthdays");
         handleMessages("anniversaries");
       }
-      default -> {
-        //Uncomment
-        log.info("No messages scheduled for this hour.");
-      }
+      default -> log.info("No messages scheduled for this hour.");
     }
   }
 
@@ -56,13 +53,13 @@ public class MessageOrchestrator {
       return;
     }
 
-    Map<AppConfig.Server, List<String>> messagesByServer = appConfig.getServers().stream()
+    Map<Server, List<String>> messagesByServer = appConfig.getServers().stream()
         .collect(Collectors.toMap(
             server -> server,
             handler::checkEvent
         ));
 
-    List<AppConfig.Server> serversWithMessages = messagesByServer.entrySet().stream()
+    List<Server> serversWithMessages = messagesByServer.entrySet().stream()
         .filter(entry -> !entry.getValue().isEmpty())
         .map(Map.Entry::getKey)
         .toList();
@@ -78,14 +75,13 @@ public class MessageOrchestrator {
     try {
       client = discordUtils.getClient();
 
-      for (AppConfig.Server server : serversWithMessages) {
+      for (Server server : serversWithMessages) {
         try {
-          sendMessagesToServer(client, server, messagesByServer.get(server));
+          sendMessagesToServer(client, server, handler, messagesByServer.get(server));
         } catch (Exception e) {
-          log.error("Error processing server: {}", server.getName(), e);
+          log.error("Error processing server {}: {}", server.getName(), e.getMessage(), e);
         }
       }
-
     } catch (Exception e) {
       log.error("Error during {} message orchestration", messageType, e);
     } finally {
@@ -96,10 +92,20 @@ public class MessageOrchestrator {
     }
   }
 
-  private void sendMessagesToServer(GatewayDiscordClient client, AppConfig.Server server, List<String> messages) {
-    messages.forEach(msg -> client.getChannelById(server.getDefaultChannelId())
+  private void sendMessagesToServer(GatewayDiscordClient client, Server server, ScheduledMessage handler, List<String> messages) {
+    discord4j.common.util.Snowflake channelId = handler.getChannelId(server);
+
+    if (channelId == null) {
+      log.error("Handler {} could not determine a valid channel ID for server: {}", handler.getType(), server.getName());
+      return;
+    }
+
+    messages.forEach(msg -> client.getChannelById(channelId)
         .ofType(MessageChannel.class)
         .flatMap(channel -> channel.createMessage(msg))
-        .subscribe());
+        .subscribe(
+            success -> log.info("Message sent to channel {} in server {}: {}", channelId.asString(), server.getName(), msg),
+            error -> log.error("Failed to send message to channel {} in server {}: {}", channelId.asString(), server.getName(), error.getMessage())
+        ));
   }
 }

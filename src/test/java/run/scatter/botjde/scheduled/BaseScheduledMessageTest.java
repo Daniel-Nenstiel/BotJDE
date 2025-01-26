@@ -3,7 +3,7 @@ package run.scatter.botjde.scheduled;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import run.scatter.botjde.config.AppConfig;
+import run.scatter.botjde.entity.server.Server;
 
 import java.util.List;
 
@@ -17,27 +17,40 @@ class BaseScheduledMessageTest {
 
   @BeforeEach
   void setup() {
+    // Use real method calls for non-overridden methods in BaseScheduledMessage
     message = Mockito.mock(BaseScheduledMessage.class, Mockito.CALLS_REAL_METHODS);
   }
 
   @Test
   void checkEvent_whenNotEnabled_returnsEmptyList() {
-    AppConfig.Server server = mock(AppConfig.Server.class);
-    when(message.isEnabled(server)).thenReturn(false);
+    // Mock a server
+    Server mockServer = mock(Server.class);
 
-    List<String> result = message.checkEvent(server);
+    // Simulate the message being disabled for the server
+    when(message.isEnabled(mockServer)).thenReturn(false);
 
+    // Execute the method
+    List<String> result = message.checkEvent(mockServer);
+
+    // Assert that the result is empty
     assertThat(result).isEmpty();
   }
 
   @Test
   void checkEvent_whenEnabled_returnsGeneratedMessages() {
-    AppConfig.Server server = mock(AppConfig.Server.class);
-    when(message.isEnabled(server)).thenReturn(true);
-    when(message.generateMessages(server)).thenReturn(List.of("Message 1", "Message 2"));
+    // Mock a server
+    Server mockServer = mock(Server.class);
 
-    List<String> result = message.checkEvent(server);
+    // Simulate the message being enabled for the server
+    when(message.isEnabled(mockServer)).thenReturn(true);
 
+    // Simulate generated messages
+    when(message.generateMessages(mockServer)).thenReturn(List.of("Message 1", "Message 2"));
+
+    // Execute the method
+    List<String> result = message.checkEvent(mockServer);
+
+    // Assert that the result contains the expected messages
     assertThat(result).containsExactly("Message 1", "Message 2");
   }
 }

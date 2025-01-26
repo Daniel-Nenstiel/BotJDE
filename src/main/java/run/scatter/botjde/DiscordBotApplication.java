@@ -6,8 +6,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.scheduling.annotation.EnableScheduling;
 import run.scatter.botjde.config.AppConfig;
 
-@SpringBootApplication
 @EnableScheduling
+@SpringBootApplication(scanBasePackages = "run.scatter.botjde")
 @EnableConfigurationProperties(AppConfig.class)
 public class DiscordBotApplication {
 

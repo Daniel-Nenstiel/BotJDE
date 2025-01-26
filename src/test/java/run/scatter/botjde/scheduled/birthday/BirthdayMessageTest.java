@@ -1,8 +1,8 @@
 package run.scatter.botjde.scheduled.birthday;
 
 import org.junit.jupiter.api.Test;
-import run.scatter.botjde.config.AppConfig;
 import run.scatter.botjde.entity.Birthday;
+import run.scatter.botjde.entity.server.Server;
 import run.scatter.botjde.entity.User;
 import run.scatter.botjde.scheduled.birthday.dao.BirthdayDao;
 
@@ -16,35 +16,54 @@ class BirthdayMessageTest {
 
   @Test
   void generateMessages_returnsFormattedMessages() {
-    // Mocking BirthdayDao
+    // Mock dependencies
     BirthdayDao birthdayDao = mock(BirthdayDao.class);
     BirthdayMessage birthdayMessage = new BirthdayMessage(birthdayDao);
-    AppConfig.Server server = mock(AppConfig.Server.class);
+    Server mockServer = mock(Server.class);
 
-    // Mocking Birthday and its nested properties
+    // Mock Birthday and User
     Birthday birthday = mock(Birthday.class);
-    User user = mock(User.class); // Replace `User` with the actual class name used in `Birthday`
+    User user = mock(User.class);
     when(birthday.getUser()).thenReturn(user);
     when(user.getName()).thenReturn("John");
     when(birthdayDao.getTodaysBirthdays()).thenReturn(List.of(birthday));
 
     // Execute the method
-    List<String> messages = birthdayMessage.generateMessages(server);
+    List<String> messages = birthdayMessage.generateMessages(mockServer);
 
     // Verify the results
     assertThat(messages).containsExactly("Happy Birthday John!");
   }
 
+  @Test
+  void generateMessages_returnsEmptyListWhenNoBirthdays() {
+    // Mock dependencies
+    BirthdayDao birthdayDao = mock(BirthdayDao.class);
+    BirthdayMessage birthdayMessage = new BirthdayMessage(birthdayDao);
+    Server mockServer = mock(Server.class);
+
+    // No birthdays for today
+    when(birthdayDao.getTodaysBirthdays()).thenReturn(List.of());
+
+    // Execute the method
+    List<String> messages = birthdayMessage.generateMessages(mockServer);
+
+    // Verify the results
+    assertThat(messages).isEmpty();
+  }
 
   @Test
   void isEnabled_checksServerConfig() {
-    AppConfig.Server server = mock(AppConfig.Server.class);
+    // Mock server
+    Server mockServer = mock(Server.class);
     BirthdayMessage birthdayMessage = new BirthdayMessage(mock(BirthdayDao.class));
 
-    when(server.isBirthdaysEnabled()).thenReturn(true);
-    assertThat(birthdayMessage.isEnabled(server)).isTrue();
+    // Check when birthdays are enabled
+    when(mockServer.isBirthdaysEnabled()).thenReturn(true);
+    assertThat(birthdayMessage.isEnabled(mockServer)).isTrue();
 
-    when(server.isBirthdaysEnabled()).thenReturn(false);
-    assertThat(birthdayMessage.isEnabled(server)).isFalse();
+    // Check when birthdays are disabled
+    when(mockServer.isBirthdaysEnabled()).thenReturn(false);
+    assertThat(birthdayMessage.isEnabled(mockServer)).isFalse();
   }
 }
