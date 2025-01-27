@@ -3,7 +3,7 @@ package run.scatter.botjde.scheduled.puzzle;
 import discord4j.common.util.Snowflake;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import run.scatter.botjde.entity.server.Server;
+import run.scatter.botjde.entity.Server;
 
 import java.util.List;
 

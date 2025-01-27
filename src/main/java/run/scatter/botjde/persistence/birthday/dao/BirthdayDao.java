@@ -1,4 +1,4 @@
-package run.scatter.botjde.scheduled.birthday.dao;
+package run.scatter.botjde.persistence.birthday.dao;
 
 import run.scatter.botjde.entity.Birthday;
 

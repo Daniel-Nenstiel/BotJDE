@@ -2,8 +2,8 @@ package run.scatter.botjde.scheduled.anniversary;
 
 import org.junit.jupiter.api.Test;
 import run.scatter.botjde.entity.Anniversary;
-import run.scatter.botjde.entity.server.Server;
-import run.scatter.botjde.scheduled.anniversary.dao.AnniversaryDao;
+import run.scatter.botjde.entity.Server;
+import run.scatter.botjde.persistence.anniversary.dao.AnniversaryDao;
 
 import java.util.List;
 

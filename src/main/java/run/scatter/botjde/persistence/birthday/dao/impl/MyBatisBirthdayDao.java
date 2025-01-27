@@ -1,10 +1,10 @@
-package run.scatter.botjde.scheduled.birthday.dao.impl;
+package run.scatter.botjde.persistence.birthday.dao.impl;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import run.scatter.botjde.scheduled.birthday.dao.BirthdayDao;
-import run.scatter.botjde.scheduled.birthday.mapper.BirthdayMapper;
+import run.scatter.botjde.persistence.birthday.dao.BirthdayDao;
+import run.scatter.botjde.mappers.BirthdayMapper;
 import run.scatter.botjde.entity.Birthday;
 
 import java.time.LocalDate;

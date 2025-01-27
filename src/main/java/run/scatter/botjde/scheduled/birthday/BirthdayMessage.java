@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import run.scatter.botjde.entity.Birthday;
-import run.scatter.botjde.entity.server.Server;
+import run.scatter.botjde.entity.Server;
 import run.scatter.botjde.scheduled.BaseScheduledMessage;
-import run.scatter.botjde.scheduled.birthday.dao.BirthdayDao;
+import run.scatter.botjde.persistence.birthday.dao.BirthdayDao;
 
 import java.util.List;
 import java.util.stream.Collectors;

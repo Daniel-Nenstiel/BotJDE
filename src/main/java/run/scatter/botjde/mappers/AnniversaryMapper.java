@@ -1,4 +1,4 @@
-package run.scatter.botjde.scheduled.anniversary.mapper;
+package run.scatter.botjde.mappers;
 
 import org.apache.ibatis.annotations.Mapper;
 import run.scatter.botjde.entity.Anniversary;

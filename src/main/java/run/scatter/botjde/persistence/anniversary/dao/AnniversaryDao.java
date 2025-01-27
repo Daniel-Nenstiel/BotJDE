@@ -1,4 +1,4 @@
-package run.scatter.botjde.scheduled.anniversary.dao;
+package run.scatter.botjde.persistence.anniversary.dao;
 
 import run.scatter.botjde.entity.Anniversary;
 

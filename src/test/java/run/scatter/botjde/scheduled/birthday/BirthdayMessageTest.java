@@ -2,9 +2,9 @@ package run.scatter.botjde.scheduled.birthday;
 
 import org.junit.jupiter.api.Test;
 import run.scatter.botjde.entity.Birthday;
-import run.scatter.botjde.entity.server.Server;
+import run.scatter.botjde.entity.Server;
 import run.scatter.botjde.entity.User;
-import run.scatter.botjde.scheduled.birthday.dao.BirthdayDao;
+import run.scatter.botjde.persistence.birthday.dao.BirthdayDao;
 
 import java.util.List;
 
