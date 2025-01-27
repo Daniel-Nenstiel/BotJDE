@@ -16,10 +16,11 @@ import java.util.stream.Collectors;
 @Qualifier("puzzles")
 public class PuzzleMessage extends BaseScheduledMessage {
   private static final Map<String, String> PUZZLES = Map.of(
-      "Mini Crossword", "https://www.nytimes.com/crosswords/game/mini",
       "Wordle", "https://www.nytimes.com/games/wordle/index.html",
-      "Spelling Bee", "https://www.nytimes.com/puzzles/spelling-bee",
-      "Crossword", "https://www.nytimes.com/crosswords/game/daily"
+      "Mini Crossword", "https://www.nytimes.com/crosswords/game/mini",
+      "Connections","https://www.nytimes.com/games/connections",
+      "Strands","https://www.nytimes.com/games/strands",
+      "TriviaV","https://triviav.com/"
   );
 
   @Override
@@ -42,7 +43,7 @@ public class PuzzleMessage extends BaseScheduledMessage {
         .map(entry -> String.format("- [%s](<%s>)", entry.getKey(), entry.getValue()))
         .collect(Collectors.joining("\n"));
 
-    return String.format("Good morning! Here are today’s NYTimes puzzles:\n\n%s", puzzleLinks);
+    return String.format("Good morning! Here are today’s puzzles:\n\n%s", puzzleLinks);
   }
 
   public String getDefaultPuzzleMessage() {
