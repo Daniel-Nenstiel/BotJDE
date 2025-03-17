@@ -1,19 +1,19 @@
 package run.scatter.botjde.events.director.processors.impl;
 
 import discord4j.core.object.entity.Message;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
-import run.scatter.botjde.events.director.processors.CommandProcessor;
+import run.scatter.botjde.events.director.processors.BaseCommandProcessor;
 
+@Slf4j
 @Component
-public class TestProcessor implements CommandProcessor {
-    private static final Logger log = LoggerFactory.getLogger(TestProcessor.class);
-
+public class TestProcessor extends BaseCommandProcessor {
     @Override
-    public boolean supports(String command) {
-        return "!test".equalsIgnoreCase(command);
+    public String getTrigger() {
+        return "test";
     }
 
     @Override

@@ -1,25 +1,24 @@
 package run.scatter.botjde.events.director.processors.impl;
 
 import discord4j.core.object.entity.Message;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
-import run.scatter.botjde.events.director.processors.CommandProcessor;
+import run.scatter.botjde.events.director.processors.BaseCommandProcessor;
 import run.scatter.botjde.scheduled.puzzle.PuzzleMessage;
 
+@Slf4j
 @Component
-public class PuzzleProcessor implements CommandProcessor {
-
-  private static final Logger log = LoggerFactory.getLogger(PuzzleProcessor.class);
-
+public class PuzzleProcessor extends BaseCommandProcessor {
   @Autowired
   private PuzzleMessage puzzleMessage;
 
   @Override
-  public boolean supports(String command) {
-    return "!puzzle".equalsIgnoreCase(command);
+  public String getTrigger() {
+    return "!puzzle";
   }
 
   @Override

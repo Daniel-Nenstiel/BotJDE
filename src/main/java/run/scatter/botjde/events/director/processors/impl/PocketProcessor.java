@@ -5,20 +5,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
-import run.scatter.botjde.events.director.processors.CommandProcessor;
+import run.scatter.botjde.events.director.processors.BaseCommandProcessor;
 import run.scatter.botjde.events.director.service.PocketCommandHandler;
 
 @Slf4j
 @Component
-public class PocketProcessor implements CommandProcessor {
+public class PocketProcessor extends BaseCommandProcessor {
 
   @Autowired
   private PocketCommandHandler commandHandler;
 
   @Override
-  public boolean supports(String command) {
-      return "!poke".equalsIgnoreCase(command);
-    }
+  public String getTrigger() {
+    return "!pocket";
+  }
 
   @Override
   public Mono<Void> process(String content, String author, Message message) {

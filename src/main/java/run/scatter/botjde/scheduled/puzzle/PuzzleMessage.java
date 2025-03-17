@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 @Qualifier("puzzles")
 public class PuzzleMessage extends BaseScheduledMessage {
   private static final Map<String, String> PUZZLES = Map.of(
+      "TriviaV","https://triviav.com/",
       "Wordle", "https://www.nytimes.com/games/wordle/index.html",
       "Mini Crossword", "https://www.nytimes.com/crosswords/game/mini",
       "Connections","https://www.nytimes.com/games/connections",
-      "Strands","https://www.nytimes.com/games/strands",
-      "TriviaV","https://triviav.com/"
+      "Strands","https://www.nytimes.com/games/strands"
   );
 
   @Override
@@ -47,7 +47,7 @@ public class PuzzleMessage extends BaseScheduledMessage {
   }
 
   public String getDefaultPuzzleMessage() {
-    return formatMessage(); // Directly call the formatting method
+    return formatMessage();
   }
 
   @Override

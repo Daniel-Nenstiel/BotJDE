@@ -27,9 +27,9 @@ dependencies {
     implementation("org.postgresql:postgresql")
 
     //Google sheets config
-    implementation("com.google.api-client:google-api-client:1.23.0")
-    implementation("com.google.oauth-client:google-oauth-client-jetty:1.23.0")
-    implementation("com.google.apis:google-api-services-sheets:v4-rev493-1.23.0")
+    implementation("com.google.api-client:google-api-client:1.32.1")
+    implementation("com.google.oauth-client:google-oauth-client:1.37.0")
+    implementation("com.google.apis:google-api-services-sheets:v4-rev20250106-2.0.0")
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")

@@ -8,6 +8,7 @@ build/
 
 **/application*.yml
 logs/
+**/credentials.json
 
 ### IntelliJ IDEA ###
 .idea/modules.xml

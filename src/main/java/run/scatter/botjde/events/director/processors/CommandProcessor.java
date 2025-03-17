@@ -5,6 +5,7 @@ import reactor.core.publisher.Mono;
 
 public interface CommandProcessor {
     boolean supports(String command);
+    String getTrigger();
 
     Mono<Void> process(String content, String author, Message message);
 }
