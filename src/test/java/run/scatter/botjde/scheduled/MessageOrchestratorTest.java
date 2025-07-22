@@ -4,7 +4,7 @@ import discord4j.common.util.Snowflake;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import run.scatter.botjde.config.AppConfig;
-import run.scatter.botjde.entity.server.Server;
+import run.scatter.botjde.entity.Server;
 import run.scatter.botjde.utils.Discord;
 
 import java.util.List;

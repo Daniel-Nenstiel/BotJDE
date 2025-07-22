@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import run.scatter.botjde.entity.server.Server;
+import run.scatter.botjde.entity.Server;
 
 
 import java.util.ArrayList;

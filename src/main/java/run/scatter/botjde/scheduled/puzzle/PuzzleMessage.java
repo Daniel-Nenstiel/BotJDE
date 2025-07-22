@@ -4,7 +4,7 @@ import discord4j.common.util.Snowflake;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import run.scatter.botjde.entity.server.Server;
+import run.scatter.botjde.entity.Server;
 import run.scatter.botjde.scheduled.BaseScheduledMessage;
 
 import java.util.List;

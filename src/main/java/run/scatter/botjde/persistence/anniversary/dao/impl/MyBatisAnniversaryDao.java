@@ -1,10 +1,10 @@
-package run.scatter.botjde.scheduled.anniversary.dao.impl;
+package run.scatter.botjde.persistence.anniversary.dao.impl;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import run.scatter.botjde.scheduled.anniversary.dao.AnniversaryDao;
-import run.scatter.botjde.scheduled.anniversary.mapper.AnniversaryMapper;
+import run.scatter.botjde.persistence.anniversary.dao.AnniversaryDao;
+import run.scatter.botjde.mappers.AnniversaryMapper;
 import run.scatter.botjde.entity.Anniversary;
 
 import java.util.List;

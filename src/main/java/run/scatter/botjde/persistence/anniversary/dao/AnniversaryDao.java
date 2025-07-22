@@ -1,12 +1,10 @@
-package run.scatter.botjde.scheduled.anniversary.mapper;
+package run.scatter.botjde.persistence.anniversary.dao;
 
-import org.apache.ibatis.annotations.Mapper;
 import run.scatter.botjde.entity.Anniversary;
 
 import java.util.List;
 
-@Mapper
-public interface AnniversaryMapper {
+public interface AnniversaryDao {
   List<Anniversary> getTodaysAnniversaries();
   List<Anniversary> getTodaysAnniversariesForServer(String serverId);
 }

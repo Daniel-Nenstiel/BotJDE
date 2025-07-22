@@ -1,7 +1,7 @@
 package run.scatter.botjde.scheduled;
 
 import discord4j.common.util.Snowflake;
-import run.scatter.botjde.entity.server.Server;
+import run.scatter.botjde.entity.Server;
 
 import java.util.List;
 

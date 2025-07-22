@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="run.scatter.botjde.scheduled.birthday.mapper.BirthdayMapper">
+<mapper namespace="run.scatter.botjde.mappers.BirthdayMapper">
 
   <!-- Result map for Birthday entity -->
   <resultMap id="BirthdayResultMap" type="run.scatter.botjde.entity.Birthday">

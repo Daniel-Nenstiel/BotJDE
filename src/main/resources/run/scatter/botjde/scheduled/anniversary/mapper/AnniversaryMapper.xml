@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="run.scatter.botjde.scheduled.anniversary.mapper.AnniversaryMapper">
+<mapper namespace="run.scatter.botjde.mappers.AnniversaryMapper">
 
   <!-- Result map for Anniversary entity -->
   <resultMap id="AnniversaryResultMap" type="run.scatter.botjde.entity.Anniversary">

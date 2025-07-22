@@ -1,4 +1,4 @@
-package run.scatter.botjde.entity.server;
+package run.scatter.botjde.entity;
 
 import discord4j.common.util.Snowflake;
 import lombok.Data;

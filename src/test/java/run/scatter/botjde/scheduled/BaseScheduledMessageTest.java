@@ -3,7 +3,7 @@ package run.scatter.botjde.scheduled;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import run.scatter.botjde.entity.server.Server;
+import run.scatter.botjde.entity.Server;
 
 import java.util.List;
 

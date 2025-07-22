@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import run.scatter.botjde.config.AppConfig;
-import run.scatter.botjde.entity.server.Server;
+import run.scatter.botjde.entity.Server;
 import run.scatter.botjde.utils.Discord;
 
 import java.time.LocalDateTime;
