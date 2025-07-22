@@ -15,7 +15,9 @@ public class MyBatisAnniversaryDao implements AnniversaryDao {
   @NonNull
   private final AnniversaryMapper mapper;
 
-  public List<Anniversary> getTodaysAnniversaries() { return mapper.getTodaysAnniversaries(); }
+  public List<Anniversary> getTodaysAnniversaries() {
+    return mapper.getTodaysAnniversaries();
+  }
 
   public List<Anniversary> getTodaysAnniversariesForServer(String serverId) {
     return mapper.getTodaysAnniversariesForServer(serverId);

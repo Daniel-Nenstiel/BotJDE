@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 @Service
 public class MessageOrchestrator {
 
+  private static final int PUZZLE_MESSAGE_HOUR = 6;
+  private static final int TAGGED_MESSAGE_HOUR = 9;
+
   private final Map<String, ScheduledMessage> messageHandlers;
   private final AppConfig appConfig;
   private final Discord discordUtils;
@@ -33,11 +36,11 @@ public class MessageOrchestrator {
 
   @Scheduled(cron = "0 0 * * * ?")
   public void schedule() {
-    int currentHour = LocalDateTime.now().getHour();
+    final int currentHour = LocalDateTime.now().getHour();
 
     switch (currentHour) {
-      case 6 -> handleMessages("puzzles");
-      case 9 -> {
+      case PUZZLE_MESSAGE_HOUR -> handleMessages("puzzles");
+      case TAGGED_MESSAGE_HOUR -> {
         handleMessages("birthdays");
         handleMessages("anniversaries");
       }
@@ -46,20 +49,20 @@ public class MessageOrchestrator {
   }
 
   protected void handleMessages(String messageType) {
-    ScheduledMessage handler = messageHandlers.get(messageType);
+    final ScheduledMessage handler = messageHandlers.get(messageType);
 
     if (handler == null) {
       log.warn("No handler found for message type: {}", messageType);
       return;
     }
 
-    Map<Server, List<String>> messagesByServer = appConfig.getServers().stream()
+    final Map<Server, List<String>> messagesByServer = appConfig.getServers().stream()
         .collect(Collectors.toMap(
             server -> server,
             handler::checkEvent
         ));
 
-    List<Server> serversWithMessages = messagesByServer.entrySet().stream()
+    final List<Server> serversWithMessages = messagesByServer.entrySet().stream()
         .filter(entry -> !entry.getValue().isEmpty())
         .map(Map.Entry::getKey)
         .toList();
@@ -93,7 +96,7 @@ public class MessageOrchestrator {
   }
 
   private void sendMessagesToServer(GatewayDiscordClient client, Server server, ScheduledMessage handler, List<String> messages) {
-    discord4j.common.util.Snowflake channelId = handler.getChannelId(server);
+    final discord4j.common.util.Snowflake channelId = handler.getChannelId(server);
 
     if (channelId == null) {
       log.error("Handler {} could not determine a valid channel ID for server: {}", handler.getType(), server.getName());

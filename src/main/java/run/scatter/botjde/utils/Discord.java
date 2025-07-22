@@ -20,11 +20,9 @@ public class Discord {
                     .build()
                     .login()
                     .block();
-        }
-        catch ( Exception exception ) {
+        } catch ( Exception exception ) {
             log.error( "Be sure to use a valid bot token!", exception );
         }
-
         return client;
     }
 }

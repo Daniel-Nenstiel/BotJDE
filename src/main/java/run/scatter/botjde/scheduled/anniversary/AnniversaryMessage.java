@@ -33,7 +33,7 @@ public class AnniversaryMessage extends BaseScheduledMessage {
 
   @Override
   protected List<String> generateMessages(Server server) {
-    List<Anniversary> anniversariesToday = anniversaryDao.getTodaysAnniversariesForServer(server.getId().asString());
+    final List<Anniversary> anniversariesToday = anniversaryDao.getTodaysAnniversariesForServer(server.getId().asString());
     if (anniversariesToday.isEmpty()) {
       log.info("No anniversaries today for server: {}", server != null ? server.getName() : "N/A");
       return List.of();

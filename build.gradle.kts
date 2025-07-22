@@ -1,7 +1,17 @@
+tasks.withType<Checkstyle> {
+    configFile = file("config/checkstyle/checkstyle.xml")
+    configProperties = configProperties.orEmpty() + mapOf(
+        "checkstyle.suppressions.file" to when (name) {
+            "checkstyleTest" -> file("config/checkstyle/test-suppressions.xml").absolutePath
+            else -> file("config/checkstyle/main-suppressions.xml").absolutePath
+        }
+    )
+}
 plugins {
     id("java")
     id("org.springframework.boot") version "3.2.0"
     id("org.flywaydb.flyway") version "11.1.0"
+    id("checkstyle")
 }
 
 group = "org.example"

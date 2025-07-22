@@ -9,28 +9,45 @@ import java.util.stream.Collectors;
 
 @Data
 public class Anniversary {
-  List<User> users;
-  LocalDate Date;
+  private List<User> users;
+  private LocalDate date;
 
   public String getFormattedNames() {
-    if(users==null|| users.isEmpty()) return "";
-    else if(users.size()==1) { return users.get(0).getName(); }
-    else if(users.size()==2){
+    if (users == null || users.isEmpty()) {
+      return "";
+    } else if (users.size() == 1) {
+      return users.get(0).getName();
+    } else if (users.size() == 2) {
       return users.stream()
           .map(User::getName)
           .collect(Collectors.joining(" and "));
-    }
-    else{
-      String commaString = users.stream()
+    } else {
+      final String commaString = users.stream()
           .map(User::getName)
           .collect(Collectors.joining(", "));
 
-      int finalComma = commaString.lastIndexOf(",");
+      final int finalComma = commaString.lastIndexOf(",");
 
       //Remove last comma and replace with ' and' turning a, b, c into a, b, and c
       return commaString.substring(0, finalComma)
           + " and"
-          + commaString.substring(finalComma+1);
+          + commaString.substring(finalComma + 1);
     }
+  }
+
+  public List<User> getUsers() {
+    return users;
+  }
+
+  public void setUsers(List<User> users) {
+    this.users = users;
+  }
+
+  public LocalDate getDate() {
+    return date;
+  }
+
+  public void setDate(LocalDate date) {
+    this.date = date;
   }
 }

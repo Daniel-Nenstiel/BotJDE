@@ -39,7 +39,7 @@ public class PuzzleMessage extends BaseScheduledMessage {
   }
 
   private String formatMessage() {
-    String puzzleLinks = PUZZLES.entrySet().stream()
+    final String puzzleLinks = PUZZLES.entrySet().stream()
         .map(entry -> String.format("- [%s](<%s>)", entry.getKey(), entry.getValue()))
         .collect(Collectors.joining("\n"));
 
@@ -47,7 +47,7 @@ public class PuzzleMessage extends BaseScheduledMessage {
   }
 
   public String getDefaultPuzzleMessage() {
-    return formatMessage(); // Directly call the formatting method
+    return formatMessage(); 
   }
 
   @Override
