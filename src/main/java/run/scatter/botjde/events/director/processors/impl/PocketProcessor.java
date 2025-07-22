@@ -23,7 +23,7 @@ public class PocketProcessor implements CommandProcessor {
   @Override
   public Mono<Void> process(String content, String author, Message message) {
     // Use the handler to get a preformatted response
-    String response = commandHandler.handleCommand(content, author);
+    final String response = commandHandler.handleCommand(content, author);
 
     // Send the response to Discord
     return message.getChannel()

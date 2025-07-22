@@ -26,7 +26,7 @@ public class PuzzleProcessor implements CommandProcessor {
   public Mono<Void> process(String content, String author, Message message) {
     log.info("Puzzle Command Called");
 
-    String puzzleMessageContent = puzzleMessage.getDefaultPuzzleMessage();
+    final String puzzleMessageContent = puzzleMessage.getDefaultPuzzleMessage();
 
     return message.getChannel()
         .flatMap(channel -> channel.createMessage(puzzleMessageContent))

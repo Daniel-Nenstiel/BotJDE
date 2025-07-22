@@ -33,7 +33,7 @@ public class BirthdayMessage extends BaseScheduledMessage {
 
   @Override
   protected List<String> generateMessages(Server server) {
-    List<Birthday> birthdaysToday = birthdayDao.getTodaysBirthdaysForServer(server.getId().asString());
+    final List<Birthday> birthdaysToday = birthdayDao.getTodaysBirthdaysForServer(server.getId().asString());
     if (birthdaysToday.isEmpty()) {
       log.info("No birthdays today for server: {}", server != null ? server.getName() : "N/A");
       return List.of();

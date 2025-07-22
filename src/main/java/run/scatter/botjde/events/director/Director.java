@@ -18,7 +18,7 @@ public class Director {
     }
 
     public Mono<Void> directCall(String content, String author, Message message) {
-        String command = content.split(" ")[0]; // Extract the command
+        final String command = content.split(" ")[0]; // Extract the command
         return processors.stream()
             .filter(processor -> processor.supports(command)) // Find the appropriate processor
             .findFirst()
