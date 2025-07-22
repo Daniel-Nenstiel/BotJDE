@@ -39,4 +39,27 @@
       AND EXTRACT(DAY FROM e.event_date) = EXTRACT(DAY FROM CURRENT_DATE)
     ORDER BY e.event_date;
   </select>
+
+  <!-- Query to get today's anniversaries for a specific server -->
+  <select id="getTodaysAnniversariesForServer" resultMap="AnniversaryResultMap" parameterType="java.lang.String">
+    SELECT
+      e.id AS eventId,
+      e.event_date AS anniversaryDate,
+      p.name AS name,
+      p.username AS username,
+      p.userId AS userId,
+      p.serverId AS serverId
+    FROM
+      events e
+    JOIN
+      people_events pe ON e.id = pe.event_id
+    JOIN
+      people p ON pe.person_userId = p.userId AND pe.person_serverId = p.serverId
+    WHERE
+      e.type = 'anniversary'
+      AND EXTRACT(MONTH FROM e.event_date) = EXTRACT(MONTH FROM CURRENT_DATE)
+      AND EXTRACT(DAY FROM e.event_date) = EXTRACT(DAY FROM CURRENT_DATE)
+      AND p.serverId = #{serverId}
+    ORDER BY e.event_date;
+  </select>
 </mapper>

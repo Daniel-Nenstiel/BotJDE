@@ -43,7 +43,7 @@ public class PuzzleMessage extends BaseScheduledMessage {
         .map(entry -> String.format("- [%s](<%s>)", entry.getKey(), entry.getValue()))
         .collect(Collectors.joining("\n"));
 
-    return String.format("Good morning! Here are today’s puzzles:\n\n%s", puzzleLinks);
+    return String.format("Good morning! Here are today’s NYTimes puzzles:\n\n%s", puzzleLinks);
   }
 
   public String getDefaultPuzzleMessage() {

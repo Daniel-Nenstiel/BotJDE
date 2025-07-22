@@ -62,6 +62,6 @@ class PuzzleMessageTest {
 
     // Verify it matches the expected format
     assertThat(defaultMessage).contains("Good morning! Here are today’s NYTimes puzzles:");
-    assertThat(defaultMessage).contains("- [Spelling Bee](<https://www.nytimes.com/puzzles/spelling-bee>)");
+    assertThat(defaultMessage).contains("- [Mini Crossword](<https://www.nytimes.com/crosswords/game/mini>)");
   }
 }

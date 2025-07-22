@@ -8,4 +8,5 @@ import java.util.List;
 @Mapper
 public interface AnniversaryMapper {
   List<Anniversary> getTodaysAnniversaries();
+  List<Anniversary> getTodaysAnniversariesForServer(String serverId);
 }

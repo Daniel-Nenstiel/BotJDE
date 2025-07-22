@@ -8,4 +8,5 @@ import java.util.List;
 public interface BirthdayDao {
   List<Birthday> getBirthdays(LocalDate date);
   List<Birthday> getTodaysBirthdays();
+  List<Birthday> getTodaysBirthdaysForServer(String serverId);
 }

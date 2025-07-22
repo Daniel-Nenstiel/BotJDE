@@ -11,4 +11,6 @@ public interface BirthdayMapper {
   List<Birthday> getBirthdaysByDate(LocalDate date);
 
   List<Birthday> getTodaysBirthdays();
+
+  List<Birthday> getTodaysBirthdaysForServer(String serverId);
 }

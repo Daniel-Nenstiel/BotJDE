@@ -1,5 +1,3 @@
-package run.scatter.botjde.scheduled.birthday.dao.impl;
-
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -22,5 +20,9 @@ public class MyBatisBirthdayDao implements BirthdayDao {
 
   public List<Birthday> getTodaysBirthdays() {
     return mapper.getTodaysBirthdays();
+  }
+
+  public List<Birthday> getTodaysBirthdaysForServer(String serverId) {
+    return mapper.getTodaysBirthdaysForServer(serverId);
   }
 }

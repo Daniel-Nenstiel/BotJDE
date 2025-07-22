@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface AnniversaryDao {
   List<Anniversary> getTodaysAnniversaries();
+  List<Anniversary> getTodaysAnniversariesForServer(String serverId);
 }
