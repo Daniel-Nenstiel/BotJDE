@@ -10,12 +10,12 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @Tag("integration")
 class AnniversaryMapperIntegrationTest {
-    @Autowired
-    private AnniversaryMapper anniversaryMapper;
+  @Autowired
+  private AnniversaryMapper anniversaryMapper;
 
-    @Test
-    void testGetTodaysAnniversariesForServerMapping() {
-        // This will throw if the mapping is broken
-        anniversaryMapper.getTodaysAnniversariesForServer("1");
-    }
+  @Test
+  void testGetTodaysAnniversariesForServerMapping() {
+    // This will throw if the mapping is broken
+    anniversaryMapper.getTodaysAnniversariesForServer("1");
+  }
 }

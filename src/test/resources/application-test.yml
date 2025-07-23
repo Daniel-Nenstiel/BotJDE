@@ -6,3 +6,6 @@ spring:
     password:
   flyway:
     enabled: false
+  token: "dummy-token"
+  defaultChannelId: "1"
+  puzzleChannelId: "1"

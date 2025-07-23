@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class MessageOrchestrator {
 
   private static final int PUZZLE_MESSAGE_HOUR = 6;
-  private static final int TAGGED_MESSAGE_HOUR = 9;
+  private static final int TAGGED_MESSAGE_HOUR = 11;
 
   private final Map<String, ScheduledMessage> messageHandlers;
   private final AppConfig appConfig;

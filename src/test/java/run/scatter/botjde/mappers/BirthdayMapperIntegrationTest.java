@@ -10,12 +10,12 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @Tag("integration")
 class BirthdayMapperIntegrationTest {
-    @Autowired
-    private BirthdayMapper birthdayMapper;
+  @Autowired
+  private BirthdayMapper birthdayMapper;
 
-    @Test
-    void testGetTodaysBirthdaysForServerMapping() {
-        // This will throw if the mapping is broken
-        birthdayMapper.getTodaysBirthdaysForServer("1");
-    }
+  @Test
+  void testGetTodaysBirthdaysForServerMapping() {
+    // This will throw if the mapping is broken
+    birthdayMapper.getTodaysBirthdaysForServer("1");
+  }
 }
