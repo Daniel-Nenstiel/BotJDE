@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="run.scatter.botjde.mappers.AnniversaryMapper">
+
+  <!-- Result map for Anniversary entity -->
+  <resultMap id="AnniversaryResultMap" type="run.scatter.botjde.entity.Anniversary">
+    <result property="date" column="anniversaryDate" />
+    <collection property="users" ofType="run.scatter.botjde.entity.User">
+      <constructor>
+        <arg column="name" javaType="java.lang.String" />
+        <arg column="username" javaType="java.lang.String" />
+        <arg column="userId" javaType="java.lang.Long" />
+        <arg column="serverId" javaType="java.lang.Long" />
+      </constructor>
+    </collection>
+  </resultMap>
+
+  <!-- Query to get today's anniversaries -->
+  <select id="getTodaysAnniversaries" resultMap="AnniversaryResultMap">
+    SELECT
+      e.id AS eventId,
+      e.event_date AS anniversaryDate,
+      p.name AS name,
+      p.username AS username,
+      p.userId AS userId,
+      p.serverId AS serverId
+    FROM
+      events e
+    JOIN
+      people_events pe ON e.id = pe.event_id
+    JOIN
+      people p ON pe.person_userId = p.userId AND pe.person_serverId = p.serverId
+    WHERE
+      e.type = 'anniversary'
+      AND EXTRACT(MONTH FROM e.event_date) = EXTRACT(MONTH FROM CURRENT_DATE)
+      AND EXTRACT(DAY FROM e.event_date) = EXTRACT(DAY FROM CURRENT_DATE)
+    ORDER BY e.event_date;
+  </select>
+
+  <!-- Query to get today's anniversaries for a specific server -->
+  <select id="getTodaysAnniversariesForServer" resultMap="AnniversaryResultMap" parameterType="java.lang.String">
+    SELECT
+      e.id AS eventId,
+      e.event_date AS anniversaryDate,
+      p.name AS name,
+      p.username AS username,
+      p.userId AS userId,
+      p.serverId AS serverId
+    FROM
+      events e
+    JOIN
+      people_events pe ON e.id = pe.event_id
+    JOIN
+      people p ON pe.person_userId = p.userId AND pe.person_serverId = p.serverId
+    WHERE
+      e.type = 'anniversary'
+      AND EXTRACT(MONTH FROM e.event_date) = EXTRACT(MONTH FROM CURRENT_DATE)
+      AND EXTRACT(DAY FROM e.event_date) = EXTRACT(DAY FROM CURRENT_DATE)
+      AND p.serverId = #{serverId}
+    ORDER BY e.event_date;
+  </select>
+</mapper>
