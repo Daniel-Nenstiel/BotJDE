@@ -1,0 +1,22 @@
+token: "dummy-token"
+
+app:
+  config:
+    source: yaml
+  servers:
+    - id: "123456789012345678"
+      name: TestServer
+      defaultChannelId: "123456789012345678"
+      puzzleChannelId: "234567890123456789"
+      birthdaysEnabled: true
+      anniversariesEnabled: true
+      puzzlesEnabled: true
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  flyway:
+    enabled: false

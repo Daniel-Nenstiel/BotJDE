@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="run.scatter.botjde.mappers.BirthdayMapper">
+
+  <!-- Result map for Birthday entity -->
+  <resultMap id="BirthdayResultMap" type="run.scatter.botjde.entity.Birthday">
+    <result property="date" column="birthdayDate" />
+    <association property="user" javaType="run.scatter.botjde.entity.User">
+      <constructor>
+        <arg column="name" javaType="java.lang.String" />
+        <arg column="username" javaType="java.lang.String" />
+        <arg column="userId" javaType="java.lang.Long" />
+        <arg column="serverId" javaType="java.lang.Long" />
+      </constructor>
+    </association>
+  </resultMap>
+
+  <!-- Query to get today's birthdays -->
+  <select id="getTodaysBirthdays" resultMap="BirthdayResultMap">
+    SELECT
+      p.name AS name,
+      p.username AS username,
+      p.userId AS userId,
+      p.serverId AS serverId,
+      e.event_date AS birthdayDate
+    FROM
+      events e
+    JOIN
+      people_events pe ON e.id = pe.event_id
+    JOIN
+      people p ON pe.person_userId = p.userId AND pe.person_serverId = p.serverId
+    WHERE
+      e.type = 'birthday'
+      AND EXTRACT(MONTH FROM e.event_date) = EXTRACT(MONTH FROM CURRENT_DATE)
+      AND EXTRACT(DAY FROM e.event_date) = EXTRACT(DAY FROM CURRENT_DATE);
+  </select>
+
+  <!-- Query to get today's birthdays for a specific server -->
+  <select id="getTodaysBirthdaysForServer" resultMap="BirthdayResultMap" parameterType="java.lang.String">
+    SELECT
+      p.name AS name,
+      p.username AS username,
+      p.userId AS userId,
+      p.serverId AS serverId,
+      e.event_date AS birthdayDate
+    FROM
+      events e
+    JOIN
+      people_events pe ON e.id = pe.event_id
+    JOIN
+      people p ON pe.person_userId = p.userId AND pe.person_serverId = p.serverId
+    WHERE
+      e.type = 'birthday'
+      AND EXTRACT(MONTH FROM e.event_date) = EXTRACT(MONTH FROM CURRENT_DATE)
+      AND EXTRACT(DAY FROM e.event_date) = EXTRACT(DAY FROM CURRENT_DATE)
+      AND p.serverId = CAST(#{serverId} AS bigint);
+  </select>
+
+  <!-- Query to get birthdays for a specific date -->
+  <select id="getBirthdaysByDate" resultMap="BirthdayResultMap" parameterType="java.time.LocalDate">
+    SELECT
+      p.name AS name,
+      p.username AS username,
+      p.userId AS userId,
+      p.serverId AS serverId,
+      e.event_date AS birthdayDate
+    FROM
+      events e
+    JOIN
+      people_events pe ON e.id = pe.event_id
+    JOIN
+      people p ON pe.person_userId = p.userId AND pe.person_serverId = p.serverId
+    WHERE
+      e.type = 'birthday'
+      AND EXTRACT(MONTH FROM e.event_date) = EXTRACT(MONTH FROM #{date})
+      AND EXTRACT(DAY FROM e.event_date) = EXTRACT(DAY FROM #{date});
+  </select>
+</mapper>
