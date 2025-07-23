@@ -1,16 +1,41 @@
-token: "MyTokenHere"
-defaultChannelId: "1234567890987654321"
-puzzleChannelId:  "1234567890987654321"
+ token: "YOUR_TOKEN_HERE"
+ 
+ app:
+   config:
+     source: yaml
+   servers:
+     - id: 123456789012345678
+       name: ExampleServer1
+       defaultChannelId: 123456789012345678 # Example - General
+       puzzleChannelId: 987654321098765432 # Example - Puzzles
+       birthdaysEnabled: true
+       anniversariesEnabled: true
+       puzzlesEnabled: true
+ 
+     - id: 234567890123456789
+       name: ExampleServer2
+       defaultChannelId: 234567890123456789 # Example2 - General
+       puzzleChannelId: 876543210987654321 # Example2 - Puzzles
+       birthdaysEnabled: false
+       anniversariesEnabled: false
+       puzzlesEnabled: false
+ 
+ spring:
+   profiles:
+     active: default
+   main:
+     banner-mode: off
+   application:
+     name: BotJDE
+   datasource:
+     url: jdbc:postgresql://localhost:5432/botjde
+     username: postgres
+     password: postgres
+   flyway:
+     enabled: true
+     locations: classpath:db/migration
+ 
+ logging:
+   level:
+     ROOT: WARN
 
-logging:
-  level:
-    ROOT: WARN
-
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/botjde
-    username: postgres
-    password: postgres
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
