@@ -59,7 +59,7 @@
       e.type = 'anniversary'
       AND EXTRACT(MONTH FROM e.event_date) = EXTRACT(MONTH FROM CURRENT_DATE)
       AND EXTRACT(DAY FROM e.event_date) = EXTRACT(DAY FROM CURRENT_DATE)
-      AND p.serverId = #{serverId}
+      AND p.serverId = CAST(#{serverId} AS bigint)
     ORDER BY e.event_date;
   </select>
 </mapper>

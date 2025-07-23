@@ -16,6 +16,6 @@ class AnniversaryMapperIntegrationTest {
     @Test
     void testGetTodaysAnniversariesForServerMapping() {
         // This will throw if the mapping is broken
-        anniversaryMapper.getTodaysAnniversariesForServer("test-server-id");
+        anniversaryMapper.getTodaysAnniversariesForServer("1");
     }
 }

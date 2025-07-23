@@ -16,6 +16,6 @@ class BirthdayMapperIntegrationTest {
     @Test
     void testGetTodaysBirthdaysForServerMapping() {
         // This will throw if the mapping is broken
-        birthdayMapper.getTodaysBirthdaysForServer("test-server-id");
+        birthdayMapper.getTodaysBirthdaysForServer("1");
     }
 }
