@@ -1,3 +1,17 @@
+token: "dummy-token"
+
+app:
+  config:
+    source: yaml
+  servers:
+    - id: "123456789012345678"
+      name: TestServer
+      defaultChannelId: "123456789012345678"
+      puzzleChannelId: "234567890123456789"
+      birthdaysEnabled: true
+      anniversariesEnabled: true
+      puzzlesEnabled: true
+
 spring:
   datasource:
     url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
@@ -6,6 +20,3 @@ spring:
     password:
   flyway:
     enabled: false
-  token: "dummy-token"
-  defaultChannelId: "1"
-  puzzleChannelId: "1"
