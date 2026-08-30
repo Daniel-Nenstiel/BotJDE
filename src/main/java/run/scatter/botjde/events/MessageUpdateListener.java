@@ -4,12 +4,13 @@ import discord4j.core.event.domain.message.MessageUpdateEvent;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import run.scatter.botjde.events.director.Director;
+import run.scatter.botjde.config.AppConfig;
 
 @Service
 public class MessageUpdateListener extends MessageListener implements EventListener<MessageUpdateEvent> {
 
-    public MessageUpdateListener(Director director) {
-        super(director);
+    public MessageUpdateListener(Director director, AppConfig appConfig) {
+        super(director, appConfig);
     }
 
     @Override

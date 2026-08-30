@@ -1,7 +1,12 @@
 # ---- Stage 1: Build ----
-    FROM gradle:7.6-jdk17 AS builder
+# Use the Gradle official image with a specific distro tag (jammy) to avoid missing tag issues
+    FROM gradle:7.6-jdk17-jammy AS builder
+    # Build cache-bust arg: change this value (or set CACHEBUST env) to force rebuild
+    ARG CACHEBUST=0
 
     WORKDIR /app
+    # expose cachebust value as a label to ensure layer changes when ARG changes
+    LABEL cachebust=$CACHEBUST
 
     COPY ../build.gradle.kts ../settings.gradle.kts ../gradlew ./
     COPY ../gradle ./gradle
@@ -21,7 +26,8 @@
         ls -l /app/build/libs
 
     #### ---- Stage 2: Runtime ---- ####
-    FROM openjdk:17-jdk-slim
+    # Use Eclipse Temurin (Adoptium) runtime image which is available and maintained
+    FROM eclipse-temurin:17-jdk-jamm
     
     WORKDIR /app
 
