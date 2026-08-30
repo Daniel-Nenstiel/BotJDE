@@ -4,6 +4,7 @@ A personal Discord bot for friends servers built with Spring Boot 3, Discord4J, 
 
 ## Features
 * **Discord Slash Commands**: Native `/` application commands with instant guild registration.
+* **Game Server Management**: Control and monitor hosted game servers (status, start, stop, restart, logs) via `/server`.
 * **Scheduled Notifications**: Automatic morning posts for birthdays and anniversaries (9:00 AM) and NYTimes puzzles (6:00 AM).
 * **Multi-Server Configuration**: Profile-driven configuration (`dev` and `prod`) allowing per-server channel routing and feature toggles.
 * **Database Management**: Schema and database functions managed with Flyway migrations.
@@ -16,6 +17,12 @@ A personal Discord bot for friends servers built with Spring Boot 3, Discord4J, 
 | `/test` | Ping the bot to verify it is running | `pong!` |
 | `/puzzle` | Get today's NYTimes puzzle links on demand | List of daily puzzle links |
 | `/poke` | Poke the bot | `pika` |
+| `/server status` | View status of all configured game servers | Status embed (state, health, details) |
+| `/server <game> status` | Check status of a specific game server | Detailed status embed |
+| `/server <game> start` | Start a game server | Confirmation embed |
+| `/server <game> stop` | Stop a game server | Confirmation embed |
+| `/server <game> restart` | Restart a game server | Confirmation embed |
+| `/server <game> logs [lines]` | View recent container log output | Code block with recent logs |
 
 ## How to Run
 
@@ -51,7 +58,20 @@ app:
       puzzlesEnabled: false
 ```
 
-### 3. Start with Docker Compose
+### 3. Game Server Configuration
+Game servers are configured in `src/main/resources/gameservers.yml` (or mounted at `config/gameservers.yml`):
+```yaml
+app:
+  gameservers:
+    - id: zomboid
+      name: Project Zomboid
+      type: docker
+      target: project-zomboid
+      enabled: true
+      description: "Dedicated Project Zomboid survival server"
+```
+
+### 4. Start with Docker Compose
 Navigate to `/docker` and start the desired container:
 
 ```bash

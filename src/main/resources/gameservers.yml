@@ -1,0 +1,8 @@
+app:
+  gameservers:
+    - id: zomboid
+      name: Project Zomboid
+      type: docker
+      target: project-zomboid
+      enabled: true
+      description: "Dedicated Project Zomboid survival server"

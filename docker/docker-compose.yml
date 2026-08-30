@@ -37,8 +37,10 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_OPTS=-Duser.timezone=America/New_York
       - TZ=America/New_York
+      - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
-      - ../logs:/app/logs 
+      - ../logs:/app/logs
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       database:
         condition: service_healthy
@@ -65,8 +67,10 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
       - JAVA_OPTS=-Duser.timezone=America/New_York
       - TZ=America/New_York
+      - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
       - ../logs/dev:/app/logs
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       database:
         condition: service_healthy

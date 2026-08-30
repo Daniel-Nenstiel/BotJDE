@@ -8,6 +8,7 @@ A personal Discord bot for friends servers. Spring Boot 3, Discord4J, PostgreSQL
 - **New scheduled message**: Extend `BaseScheduledMessage`. Orchestrator runs hourly; puzzles at 6am, birthdays/anniversaries at 9am.
 - **Persistence**: MyBatis XML mappers. Canonical XMLs are in `mappers/` — ignore duplicates under `scheduled/*/mapper/` (stale).
 - **Config**: Server-specific config in `application-dev.yml` / `application-prod.yml`. Base `application.yml` is defaults + env refs only.
+- **Game Servers**: Configured in `gameservers.yml`. Providers implement `GameServerProvider` (e.g. `DockerGameServerProvider`).
 - **Formatting**: Spotless enforces 2-space indentation (`.editorconfig`). Auto-format with `./gradlew spotlessApply`.
 - **Integration tests**: Tagged `@Tag("integration")`, use H2 in PostgreSQL mode, excluded from default `./gradlew test`.
 

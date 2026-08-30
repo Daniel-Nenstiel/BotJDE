@@ -36,6 +36,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.postgresql:postgresql")
+    // Docker Java client
+    implementation("com.github.docker-java:docker-java-core:3.4.1")
+    implementation("com.github.docker-java:docker-java-transport-zerodep:3.4.1")
 
     //Google sheets config
     implementation("com.google.api-client:google-api-client:1.23.0")

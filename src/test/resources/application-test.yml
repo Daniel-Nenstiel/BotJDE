@@ -11,6 +11,13 @@ app:
       birthdaysEnabled: true
       anniversariesEnabled: true
       puzzlesEnabled: true
+  gameservers:
+    - id: test-server
+      name: Test Server
+      type: docker
+      target: test-container
+      enabled: true
+      description: "Test Game Server"
 
 spring:
   datasource:

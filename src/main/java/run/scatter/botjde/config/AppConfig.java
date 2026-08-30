@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import run.scatter.botjde.entity.Server;
-
+import run.scatter.botjde.gameservers.model.GameServerConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ public class AppConfig {
   private String configSource;
 
   private List<Server> servers = new ArrayList<>();
+  private List<GameServerConfig> gameservers = new ArrayList<>();
 
   public void initializeConfig() {
     log.info("Initializing configuration with source: {}", configSource);
