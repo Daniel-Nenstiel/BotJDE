@@ -47,7 +47,7 @@ public class PuzzleMessage extends BaseScheduledMessage {
   }
 
   public String getDefaultPuzzleMessage() {
-    return formatMessage(); 
+    return formatMessage();
   }
 
   @Override

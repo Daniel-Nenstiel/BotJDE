@@ -12,6 +12,7 @@ plugins {
     id("org.springframework.boot") version "3.2.0"
     id("org.flywaydb.flyway") version "11.1.0"
     id("checkstyle")
+    id("com.diffplug.spotless") version "6.25.0"
 }
 
 group = "org.example"
@@ -66,4 +67,13 @@ tasks.register<Test>("integrationTest") {
     testClassesDirs = sourceSets["test"].output.classesDirs
     classpath = sourceSets["test"].runtimeClasspath
     shouldRunAfter(tasks.test)
+}
+
+spotless {
+    java {
+        target("src/**/*.java")
+        indentWithSpaces(2)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }

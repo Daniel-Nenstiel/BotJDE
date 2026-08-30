@@ -27,7 +27,7 @@
 
     #### ---- Stage 2: Runtime ---- ####
     # Use Eclipse Temurin (Adoptium) runtime image which is available and maintained
-    FROM eclipse-temurin:17-jdk-jamm
+    FROM eclipse-temurin:17-jdk-jammy
     
     WORKDIR /app
 

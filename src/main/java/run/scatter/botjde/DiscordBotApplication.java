@@ -11,7 +11,7 @@ import run.scatter.botjde.config.AppConfig;
 @EnableConfigurationProperties(AppConfig.class)
 public class DiscordBotApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DiscordBotApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(DiscordBotApplication.class, args);
+  }
 }
