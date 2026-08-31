@@ -4,11 +4,11 @@ A personal Discord bot for friends servers built with Spring Boot 3, Discord4J, 
 
 ## Features
 * **Discord Slash Commands**: Native `/` application commands with instant guild registration.
+* **Username Color Customization**: Change your Discord username color using standard 16-color swatches or custom `#RRGGBB` hex codes via `/color`.
 * **Game Server Management**: Control and monitor hosted game servers (status, start, stop, restart, logs) via `/server`.
 * **Scheduled Notifications**: Automatic morning posts for birthdays and anniversaries (9:00 AM) and NYTimes puzzles (6:00 AM).
 * **Multi-Server Configuration**: Profile-driven configuration (`dev` and `prod`) allowing per-server channel routing and feature toggles.
 * **Database Management**: Schema and database functions managed with Flyway migrations.
-* ***(Coming Soon)***: Username color changing commands.
 
 ## Slash Commands
 
@@ -17,6 +17,10 @@ A personal Discord bot for friends servers built with Spring Boot 3, Discord4J, 
 | `/test` | Ping the bot to verify it is running | `pong!` |
 | `/puzzle` | Get today's NYTimes puzzle links on demand | List of daily puzzle links |
 | `/poke` | Poke the bot | `pika` |
+| `/color set <color>` | Set your username color (preset swatch name or `#RRGGBB` hex) | Color confirmation embed |
+| `/color remove` | Reset your username color to default | Reset confirmation message |
+| `/color random` | Assign a random vibrant username color | Random color confirmation embed |
+| `/color list` | View the 16 default Discord role color swatches | Color swatches overview embed |
 | `/server status` | View status of all configured game servers | Status embed (state, health, details) |
 | `/server <game> status` | Check status of a specific game server | Detailed status embed |
 | `/server <game> start` | Start a game server | Confirmation embed |
