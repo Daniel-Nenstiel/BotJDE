@@ -41,5 +41,11 @@ class ColorCommandTest {
     assertThat(options.stream().anyMatch(opt -> opt.name().equals("remove"))).isTrue();
     assertThat(options.stream().anyMatch(opt -> opt.name().equals("random"))).isTrue();
     assertThat(options.stream().anyMatch(opt -> opt.name().equals("list"))).isTrue();
+
+    ApplicationCommandOptionData setOption = options.stream()
+        .filter(opt -> opt.name().equals("set"))
+        .findFirst()
+        .orElseThrow();
+    assertThat(setOption.options().get().get(0).autocomplete().get()).isTrue();
   }
 }

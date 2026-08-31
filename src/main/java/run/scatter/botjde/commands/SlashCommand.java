@@ -1,5 +1,6 @@
 package run.scatter.botjde.commands;
 
+import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import reactor.core.publisher.Mono;
@@ -36,4 +37,14 @@ public interface SlashCommand {
    * @return a Mono representing completion of the interaction response
    */
   Mono<Void> handle(ChatInputInteractionEvent event);
+
+  /**
+   * Handles an incoming autocomplete interaction for dynamic option suggestions.
+   *
+   * @param event the Discord autocomplete interaction event
+   * @return a Mono representing completion of the autocomplete response
+   */
+  default Mono<Void> handleAutocomplete(ChatInputAutoCompleteEvent event) {
+    return Mono.empty();
+  }
 }

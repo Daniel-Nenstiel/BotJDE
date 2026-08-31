@@ -1,5 +1,6 @@
 package run.scatter.botjde.commands;
 
+import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
@@ -18,6 +19,7 @@ import run.scatter.botjde.color.model.DiscordColorPalette.ResolvedColor;
 import run.scatter.botjde.color.model.DiscordColorPalette.Swatch;
 import run.scatter.botjde.color.service.ColorService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +30,7 @@ import java.util.List;
 public class ColorCommand implements SlashCommand {
 
   private static final int FORBIDDEN_STATUS_CODE = 403;
+  private static final int MAX_AUTOCOMPLETE_SUGGESTIONS = 20;
 
   private final ColorService colorService;
 
@@ -42,14 +45,6 @@ public class ColorCommand implements SlashCommand {
 
   @Override
   public ApplicationCommandRequest getCommandDefinition() {
-    // Build choices for 16 default swatch colors
-    final List<ApplicationCommandOptionChoiceData> choices = colorService.getPalette().stream()
-        .map(swatch -> (ApplicationCommandOptionChoiceData) ApplicationCommandOptionChoiceData.builder()
-            .name(swatch.displayName() + " (" + swatch.hex() + ")")
-            .value(swatch.id())
-            .build())
-        .toList();
-
     return ApplicationCommandRequest.builder()
         .name(getName())
         .description("Customize your Discord username color")
@@ -62,7 +57,7 @@ public class ColorCommand implements SlashCommand {
                 .description("Preset swatch name or custom hex code (e.g. #FF5733)")
                 .type(ApplicationCommandOption.Type.STRING.getValue())
                 .required(true)
-                .choices(choices)
+                .autocomplete(true)
                 .build())
             .build())
         .addOption(ApplicationCommandOptionData.builder()
@@ -81,6 +76,41 @@ public class ColorCommand implements SlashCommand {
             .type(ApplicationCommandOption.Type.SUB_COMMAND.getValue())
             .build())
         .build();
+  }
+
+  @Override
+  public Mono<Void> handleAutocomplete(ChatInputAutoCompleteEvent event) {
+    final String query = event.getFocusedOption().getValue()
+        .map(v -> v.asString().trim())
+        .orElse("");
+
+    final String queryLower = query.toLowerCase();
+    final List<ApplicationCommandOptionChoiceData> matchingChoices = new ArrayList<>();
+
+    if (query.startsWith("#") || query.matches("^[0-9a-fA-F]{1,6}$")) {
+      final String formattedHex = query.startsWith("#") ? query.toUpperCase() : "#" + query.toUpperCase();
+      final ApplicationCommandOptionChoiceData customChoice = ApplicationCommandOptionChoiceData.builder()
+          .name("🎨 Custom Hex: " + formattedHex)
+          .value(formattedHex)
+          .build();
+      matchingChoices.add(customChoice);
+    }
+
+    colorService.getPalette().stream()
+        .filter(swatch -> queryLower.isBlank()
+            || swatch.id().contains(queryLower)
+            || swatch.displayName().toLowerCase().contains(queryLower)
+            || swatch.hex().toLowerCase().contains(queryLower))
+        .limit(MAX_AUTOCOMPLETE_SUGGESTIONS)
+        .forEach(swatch -> {
+          final ApplicationCommandOptionChoiceData swatchChoice = ApplicationCommandOptionChoiceData.builder()
+              .name(swatch.emoji() + " " + swatch.displayName() + " (" + swatch.hex() + ")")
+              .value(swatch.id())
+              .build();
+          matchingChoices.add(swatchChoice);
+        });
+
+    return event.respondWithSuggestions(matchingChoices);
   }
 
   @Override
