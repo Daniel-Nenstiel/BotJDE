@@ -1,6 +1,10 @@
 package run.scatter.botjde.scheduled.birthday;
 
+import discord4j.common.util.Snowflake;
+import discord4j.core.GatewayDiscordClient;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import run.scatter.botjde.config.AppConfig;
 import run.scatter.botjde.entity.Birthday;
 import run.scatter.botjde.entity.Server;
 import run.scatter.botjde.entity.User;
@@ -9,33 +13,33 @@ import run.scatter.botjde.persistence.birthday.dao.BirthdayDao;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class BirthdayMessageTest {
-  @Test
-  void generateMessages_filtersByServer() {
-    BirthdayDao birthdayDao = mock(BirthdayDao.class);
-    BirthdayMessage birthdayMessage = new BirthdayMessage(birthdayDao);
-    Server mockServer = mock(Server.class);
-    when(mockServer.getId()).thenReturn(discord4j.common.util.Snowflake.of(123L));
 
-    Birthday birthday = mock(Birthday.class);
-    User user = mock(User.class);
-    when(birthday.getUser()).thenReturn(user);
-    when(user.getName()).thenReturn("John");
-    when(birthdayDao.getTodaysBirthdaysForServer("123")).thenReturn(List.of(birthday));
+  private BirthdayDao birthdayDao;
+  private AppConfig appConfig;
+  private GatewayDiscordClient client;
+  private BirthdayMessage birthdayMessage;
 
-    List<String> messages = birthdayMessage.generateMessages(mockServer);
-    assertThat(messages).containsExactly("Happy Birthday John!");
+  @BeforeEach
+  void setUp() {
+    birthdayDao = mock(BirthdayDao.class);
+    appConfig = mock(AppConfig.class);
+    client = mock(GatewayDiscordClient.class);
+    birthdayMessage = new BirthdayMessage(birthdayDao, appConfig, client);
   }
 
   @Test
-  void generateMessages_returnsFormattedMessages() {
-    BirthdayDao birthdayDao = mock(BirthdayDao.class);
-    BirthdayMessage birthdayMessage = new BirthdayMessage(birthdayDao);
+  void taskMetadata_returnsExpectedValues() {
+    assertThat(birthdayMessage.getName()).isEqualTo("birthdays");
+    assertThat(birthdayMessage.getCronExpression()).isEqualTo("0 0 9 * * ?");
+  }
+
+  @Test
+  void generateMessages_filtersByServer() {
     Server mockServer = mock(Server.class);
-    when(mockServer.getId()).thenReturn(discord4j.common.util.Snowflake.of(123L));
+    when(mockServer.getId()).thenReturn(Snowflake.of(123L));
 
     Birthday birthday = mock(Birthday.class);
     User user = mock(User.class);
@@ -49,26 +53,21 @@ class BirthdayMessageTest {
 
   @Test
   void generateMessages_returnsEmptyListWhenNoBirthdays() {
-    BirthdayDao birthdayDao = mock(BirthdayDao.class);
-    BirthdayMessage birthdayMessage = new BirthdayMessage(birthdayDao);
     Server mockServer = mock(Server.class);
-    when(mockServer.getId()).thenReturn(discord4j.common.util.Snowflake.of(123L));
+    when(mockServer.getId()).thenReturn(Snowflake.of(123L));
     when(birthdayDao.getTodaysBirthdaysForServer("123")).thenReturn(List.of());
+
     List<String> messages = birthdayMessage.generateMessages(mockServer);
     assertThat(messages).isEmpty();
   }
 
   @Test
   void isEnabled_checksServerConfig() {
-    // Mock server
     Server mockServer = mock(Server.class);
-    BirthdayMessage birthdayMessage = new BirthdayMessage(mock(BirthdayDao.class));
 
-    // Check when birthdays are enabled
     when(mockServer.isBirthdaysEnabled()).thenReturn(true);
     assertThat(birthdayMessage.isEnabled(mockServer)).isTrue();
 
-    // Check when birthdays are disabled
     when(mockServer.isBirthdaysEnabled()).thenReturn(false);
     assertThat(birthdayMessage.isEnabled(mockServer)).isFalse();
   }

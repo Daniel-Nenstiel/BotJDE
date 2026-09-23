@@ -1,29 +1,48 @@
 package run.scatter.botjde.scheduled.anniversary;
 
+import discord4j.core.GatewayDiscordClient;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import run.scatter.botjde.config.AppConfig;
 import run.scatter.botjde.entity.Anniversary;
 import run.scatter.botjde.entity.Server;
-import run.scatter.botjde.scheduled.BaseScheduledMessage;
 import run.scatter.botjde.persistence.anniversary.dao.AnniversaryDao;
+import run.scatter.botjde.scheduled.BaseScheduledMessage;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Scheduled task that checks for anniversaries and sends celebration messages daily at 9:00 AM.
+ */
 @Slf4j
 @Component
-@Qualifier("anniversaries")
 public class AnniversaryMessage extends BaseScheduledMessage {
+
+  private static final String CRON_DAILY_9AM = "0 0 9 * * ?";
+
   private final AnniversaryDao anniversaryDao;
 
-  public AnniversaryMessage(AnniversaryDao anniversaryDao) {
+  @Autowired
+  public AnniversaryMessage(
+      AnniversaryDao anniversaryDao,
+      AppConfig appConfig,
+      @Lazy @Autowired(required = false) GatewayDiscordClient gatewayDiscordClient
+  ) {
+    super(appConfig, gatewayDiscordClient);
     this.anniversaryDao = anniversaryDao;
   }
 
   @Override
-  public String getType() {
+  public String getName() {
     return "anniversaries";
+  }
+
+  @Override
+  public String getCronExpression() {
+    return CRON_DAILY_9AM;
   }
 
   @Override

@@ -21,6 +21,7 @@ A personal Discord bot for friends servers built with Spring Boot 3, Discord4J, 
 | `/color remove` | Reset your username color to default | Reset confirmation message |
 | `/color random` | Assign a random vibrant username color | Random color confirmation embed |
 | `/color list` | View the 16 default Discord role color swatches | Color swatches overview embed |
+| `/color cleanup` | Sweep and remove unused custom color roles | Cleanup summary message |
 | `/server status` | View status of all configured game servers | Status embed (state, health, details) |
 | `/server <game> status` | Check status of a specific game server | Detailed status embed |
 | `/server <game> start` | Start a game server | Confirmation embed |

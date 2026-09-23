@@ -1,14 +1,16 @@
 package run.scatter.botjde.config;
 
-import run.scatter.botjde.events.EventListener;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.Event;
+import discord4j.gateway.intent.Intent;
+import discord4j.gateway.intent.IntentSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import run.scatter.botjde.events.EventListener;
 
 import java.util.List;
 
@@ -26,6 +28,8 @@ public class BotConfiguration {
         try {
             client = DiscordClientBuilder.create(token)
               .build()
+              .gateway()
+              .setEnabledIntents(IntentSet.nonPrivileged().or(IntentSet.of(Intent.GUILD_MEMBERS)))
               .login()
               .block();
 

@@ -41,6 +41,7 @@ class ColorCommandTest {
     assertThat(options.stream().anyMatch(opt -> opt.name().equals("remove"))).isTrue();
     assertThat(options.stream().anyMatch(opt -> opt.name().equals("random"))).isTrue();
     assertThat(options.stream().anyMatch(opt -> opt.name().equals("list"))).isTrue();
+    assertThat(options.stream().anyMatch(opt -> opt.name().equals("cleanup"))).isTrue();
 
     ApplicationCommandOptionData setOption = options.stream()
         .filter(opt -> opt.name().equals("set"))

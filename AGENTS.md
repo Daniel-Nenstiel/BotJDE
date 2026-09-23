@@ -6,6 +6,7 @@ A personal Discord bot for friends servers. Spring Boot 3, Discord4J, PostgreSQL
 
 - **New slash command**: `@Component implements SlashCommand` in `commands/`. Auto-discovered by Spring, auto-registered with Discord at startup.
 - **New scheduled message**: Extend `BaseScheduledMessage`. Orchestrator runs hourly; puzzles at 6am, birthdays/anniversaries at 9am.
+- **New scheduled task**: `@Component implements ScheduledTask` in `scheduled/tasks/`. Auto-discovered by Spring, auto-registered with cron schedules at startup.
 - **Persistence**: MyBatis XML mappers. Canonical XMLs are in `mappers/` — ignore duplicates under `scheduled/*/mapper/` (stale).
 - **Config**: Server-specific config in `application-dev.yml` / `application-prod.yml`. Base `application.yml` is defaults + env refs only.
 - **Game Servers**: Configured in `gameservers.yml`. Providers implement `GameServerProvider` (e.g. `DockerGameServerProvider`).

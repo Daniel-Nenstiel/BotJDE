@@ -75,6 +75,11 @@ public class ColorCommand implements SlashCommand {
             .description("List available default color swatches")
             .type(ApplicationCommandOption.Type.SUB_COMMAND.getValue())
             .build())
+        .addOption(ApplicationCommandOptionData.builder()
+            .name("cleanup")
+            .description("Clean up unused custom color roles in this server")
+            .type(ApplicationCommandOption.Type.SUB_COMMAND.getValue())
+            .build())
         .build();
   }
 
@@ -122,7 +127,7 @@ public class ColorCommand implements SlashCommand {
   private Mono<Void> routeCommand(ChatInputInteractionEvent event) {
     final List<ApplicationCommandInteractionOption> options = event.getOptions();
     if (options.isEmpty()) {
-      return event.editReply("Please specify a subcommand: `/color set <color>`, `/color remove`, `/color random`, or `/color list`.").then();
+      return event.editReply("Please specify a subcommand: `/color set <color>`, `/color remove`, `/color random`, `/color list`, or `/color cleanup`.").then();
     }
 
     final ApplicationCommandInteractionOption subcommand = options.get(0);
@@ -138,8 +143,21 @@ public class ColorCommand implements SlashCommand {
       case "remove" -> handleRemove(event, member);
       case "random" -> handleRandom(event, member);
       case "list" -> handleList(event);
+      case "cleanup" -> handleCleanup(event);
       default -> event.editReply("Unknown subcommand `" + subcommandName + "`.").then();
     };
+  }
+
+  private Mono<Void> handleCleanup(ChatInputInteractionEvent event) {
+    return event.getInteraction().getGuild()
+        .flatMap(colorService::cleanupOrphanColorRoles)
+        .flatMap(count -> {
+          final String message = count > 0
+              ? "🧹 Cleaned up **" + count + "** unused color role(s)."
+              : "✨ No unused color roles found — server role list is clean!";
+          return event.editReply(message).then();
+        })
+        .onErrorResume(e -> handleColorError(event, e));
   }
 
   private Mono<Void> handleSet(ChatInputInteractionEvent event, Member member, ApplicationCommandInteractionOption subcommand) {
