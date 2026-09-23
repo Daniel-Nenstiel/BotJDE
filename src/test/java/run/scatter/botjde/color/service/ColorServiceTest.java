@@ -138,8 +138,7 @@ class ColorServiceTest {
     when(normalRole.getName()).thenReturn("Member");
     when(normalRole.getId()).thenReturn(Snowflake.of(999L));
 
-    when(mockMember.getRoles()).thenReturn(Flux.just(colorRole1, normalRole));
-    when(mockMember.removeRole(Snowflake.of(111L))).thenReturn(Mono.empty());
+    when(mockMember.getRoleIds()).thenReturn(Set.of(Snowflake.of(111L), Snowflake.of(999L)));
 
     colorService.removeColor(mockMember).block();
 

@@ -68,8 +68,9 @@ public class ColorService {
    * @return a Mono completing when all color roles are removed
    */
   public Mono<Void> removeColor(Member member) {
-    return member.getRoles()
-        .filter(this::isColorRole)
+    return member.getGuild()
+        .flatMapMany(Guild::getRoles)
+        .filter(r -> isColorRole(r) && member.getRoleIds().contains(r.getId()))
         .flatMap(role -> {
           log.info("Removing color role '{}' from user '{}'", role.getName(), member.getUsername());
           return member.removeRole(role.getId());
@@ -85,22 +86,36 @@ public class ColorService {
    * @return a Mono emitting the total number of deleted orphan and duplicate roles
    */
   public Mono<Long> cleanupOrphanColorRoles(Guild guild) {
-    return Mono.zip(guild.getMembers().collectList(), guild.getRoles().filter(this::isColorRole).collectList())
-        .flatMap(tuple -> {
-          final List<Member> members = tuple.getT1();
-          final List<Role> colorRoles = tuple.getT2();
+    return Mono.zip(
+        guild.getMembers().collectList(),
+        guild.getRoles().filter(this::isColorRole).collectList()
+    ).flatMap(tuple -> {
+      final List<Member> members = tuple.getT1();
+      final List<Role> colorRoles = tuple.getT2();
 
-          if (colorRoles.isEmpty()) {
-            return Mono.just(0L);
-          }
+      log.info("Running color cleanup for guild '{}': found {} member(s) and {} color role(s)",
+          guild.getName(), members.size(), colorRoles.size());
 
-          final Map<Integer, List<Role>> rolesByColor = colorRoles.stream()
-              .collect(Collectors.groupingBy(r -> r.getColor() != null ? r.getColor().getRGB() : 0));
+      if (colorRoles.isEmpty()) {
+        log.info("No color roles found matching prefix '{}' in guild '{}'", COLOR_ROLE_PREFIX, guild.getName());
+        return Mono.just(0L);
+      }
 
-          return Flux.fromIterable(rolesByColor.values())
-              .flatMap(group -> processColorRoleGroup(members, group))
-              .reduce(0L, Long::sum);
-        });
+      for (Role r : colorRoles) {
+        final long assignedCount = members.stream().filter(m -> m.getRoleIds().contains(r.getId())).count();
+        log.info("Found color role '{}' (id: {}, hex: {}) with {} member(s) assigned",
+            r.getName(), r.getId().asString(),
+            r.getColor() != null ? String.format("#%06X", r.getColor().getRGB()) : "none",
+            assignedCount);
+      }
+
+      final Map<Integer, List<Role>> rolesByColor = colorRoles.stream()
+          .collect(Collectors.groupingBy(r -> r.getColor() != null ? r.getColor().getRGB() : 0));
+
+      return Flux.fromIterable(rolesByColor.values())
+          .flatMap(group -> processColorRoleGroup(members, group))
+          .reduce(0L, Long::sum);
+    });
   }
 
   private Mono<Long> processColorRoleGroup(List<Member> members, List<Role> group) {
@@ -125,20 +140,27 @@ public class ColorService {
               .filter(m -> m.getRoleIds().contains(dupRole.getId()))
               .toList();
 
-          return Flux.fromIterable(membersWithDup)
-              .flatMap(m -> m.addRole(primaryRole.getId())
-                  .then(m.removeRole(dupRole.getId())))
-              .then(deleteRoleSafe(dupRole, "Consolidating duplicate color role into " + primaryRole.getName()));
+          final Mono<Void> migration = membersWithDup.isEmpty()
+              ? Mono.empty()
+              : Flux.fromIterable(membersWithDup)
+                  .flatMap(m -> m.addRole(primaryRole.getId()).then(m.removeRole(dupRole.getId())))
+                  .then();
+
+          return migration.then(deleteRoleSafe(dupRole, "Consolidating duplicate color role into " + primaryRole.getName()));
         });
 
     return cleanDuplicates.reduce(0L, Long::sum)
         .flatMap(cleanedDupesCount -> {
           // 2. Check if primaryRole has any members assigned (including originally or newly migrated)
-          final boolean hasMembers = members.stream()
-              .anyMatch(m -> m.getRoleIds().contains(primaryRole.getId())
-                  || duplicateRoles.stream().anyMatch(dup -> m.getRoleIds().contains(dup.getId())));
+          final long memberCount = members.stream()
+              .filter(m -> m.getRoleIds().contains(primaryRole.getId())
+                  || duplicateRoles.stream().anyMatch(dup -> m.getRoleIds().contains(dup.getId())))
+              .count();
 
-          if (!hasMembers) {
+          log.info("Color role '{}' ({}) has {} total assigned member(s)",
+              primaryRole.getName(), primaryRole.getId().asString(), memberCount);
+
+          if (memberCount == 0) {
             return deleteRoleSafe(primaryRole, "Color cleanup: no members assigned to this color role")
                 .map(deleted -> cleanedDupesCount + deleted);
           }
@@ -148,7 +170,8 @@ public class ColorService {
   }
 
   private Mono<Long> deleteRoleSafe(Role role, String reason) {
-    log.info("Deleting unused/duplicate color role '{}' ({})", role.getName(), role.getId().asString());
+    log.info("Deleting unused/duplicate color role '{}' ({}) - reason: {}",
+        role.getName(), role.getId().asString(), reason);
     return role.delete(reason)
         .thenReturn(1L)
         .onErrorResume(e -> {
@@ -162,15 +185,15 @@ public class ColorService {
 
     return member.getGuild()
         .flatMap(guild -> findOrCreateRole(guild, targetRoleName, resolvedColor)
-            .flatMap(role -> positionRoleBelowBot(guild, role)))
-        .flatMap(role -> removeOtherColorRoles(member, role)
-            .then(member.addRole(role.getId()))
-            .thenReturn(resolvedColor));
+            .flatMap(role -> positionRoleBelowBot(guild, role)
+                .flatMap(elevatedRole -> removeOtherColorRoles(guild, member, elevatedRole)
+                    .then(member.addRole(elevatedRole.getId()))
+                    .thenReturn(resolvedColor))));
   }
 
-  private Mono<Void> removeOtherColorRoles(Member member, Role keepRole) {
-    return member.getRoles()
-        .filter(r -> isColorRole(r) && !r.getId().equals(keepRole.getId()))
+  private Mono<Void> removeOtherColorRoles(Guild guild, Member member, Role keepRole) {
+    return guild.getRoles()
+        .filter(r -> isColorRole(r) && member.getRoleIds().contains(r.getId()) && !r.getId().equals(keepRole.getId()))
         .flatMap(role -> {
           log.info("Removing old color role '{}' from user '{}'", role.getName(), member.getUsername());
           return member.removeRole(role.getId());
@@ -228,6 +251,10 @@ public class ColorService {
   }
 
   private boolean isColorRole(Role role) {
-    return role != null && role.getName() != null && role.getName().toLowerCase().startsWith(COLOR_ROLE_PREFIX);
+    if (role == null || role.getName() == null) {
+      return false;
+    }
+    final String name = role.getName().toLowerCase().trim();
+    return name.startsWith(COLOR_ROLE_PREFIX) || name.matches("^#[0-9a-f]{6}$");
   }
 }
